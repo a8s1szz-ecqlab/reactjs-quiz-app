@@ -1,14 +1,15 @@
 # ReactJS Proficiency Quiz Application
 
-A comprehensive React.js proficiency assessment tool built with Vite and Node.js backend. Test and measure ReactJS knowledge across fundamental concepts, hooks, components, and best practices with a beautiful, interactive interface featuring real-time scoring, timers, detailed explanations, and randomized questions.
+A comprehensive React.js quiz application with **role-based access control**, designed to assess ReactJS proficiency through interactive quizzes with admin management and student tracking capabilities.
 
 ![Quiz Application](https://img.shields.io/badge/React-18.2.0-blue) ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple) ![Node.js](https://img.shields.io/badge/Node.js-16+-green) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## 📋 Table of Contents
 
 - [Features](#-features)
-- [Technology Stack](#-technology-stack)
 - [Quick Start](#-quick-start)
+- [Access Identifiers](#-access-identifiers)
+- [User Workflows](#-user-workflows)
 - [Project Structure](#-project-structure)
 - [API Documentation](#-api-documentation)
 - [Development](#-development)
@@ -17,307 +18,341 @@ A comprehensive React.js proficiency assessment tool built with Vite and Node.js
 
 ## 🌟 Features
 
-- **Comprehensive Assessment**: 50 randomly selected questions from a pool of 150+ covering React fundamentals to advanced concepts
-- **Backend-Powered**: Node.js backend manages question pool and validates answers securely
-- **Randomized Questions**: Server provides different question sets for each quiz attempt
-- **Secure Answer Validation**: All answer checking is performed server-side for integrity
-- **Proficiency Scoring**: Skill-level assessment from Novice to Expert based on performance
-- **Interactive Quiz Interface**: Modern, clean design with smooth animations
-- **Timer System**: 20-minute countdown for the entire quiz session
-- **Real-time Progress Tracking**: Visual progress bar and live score updates
-- **Detailed Explanations**: Learn from mistakes with comprehensive explanations for each answer
-- **Performance Analytics**: Detailed results with time tracking and proficiency assessment
-- **Question Review**: Review incorrect answers with explanations provided by the backend
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Beautiful UI**: Gradient backgrounds, smooth transitions, and modern ReactJS theming
+### 🔐 Role-Based Access Control
+- **Admin Dashboard**: Complete student and quiz management interface
+- **Student Profiles**: Personal progress tracking and quiz history
+- **Secure Authentication**: Token-based admin access and ID-based student access
+- **Quiz Attempt Management**: Assign and track individual quiz sessions
 
-## 🎯 Quiz Content Coverage
+### 👨‍💼 Admin Features
+- **Student Management**: Create, edit, and delete student accounts
+- **Quiz Assignment**: Assign multiple quiz attempts per student
+- **Dashboard Analytics**: View completion rates and performance statistics
+- **Attempt Monitoring**: Track all quiz attempts across the system
+- **Comprehensive Reporting**: Export and analyze student performance data
 
-### Fundamental Concepts
-- Component creation patterns (functional components, arrow functions)
-- JSX syntax and best practices
-- Props and data flow between components
+### 👨‍🎓 Student Features
+- **Personal Dashboard**: View profile statistics and quiz history
+- **Detailed Results**: Question-by-question analysis with explanations
+- **Progress Tracking**: Monitor improvement over multiple attempts
+- **Responsive Interface**: Optimized for desktop and mobile devices
 
-### React Hooks
-- useState for state management
-- useEffect for side effects and lifecycle
-- useContext for context consumption
-- useMemo for performance optimization
-- useRef for DOM references
-
-### Advanced Topics
-- Virtual DOM concepts and optimization
-- React.Fragment usage
-- React.memo for component optimization
-- Event handling best practices
-- Conditional rendering and list keys
-
-### Performance & Best Practices
-- State update patterns
-- Dependency arrays in useEffect
-- Component re-render optimization
-- Memory management and refs
+### 📝 Quiz System
+- **Attempt-Based Security**: Each quiz session tied to a unique attempt ID
+- **200+ Questions**: Comprehensive ReactJS question database
+- **Intelligent Randomization**: Server-side question selection and shuffling
+- **Time Management**: Configurable time limits with visual countdown
+- **Immediate Feedback**: Detailed explanations for all questions
+- **Progress Persistence**: Save and resume quiz sessions
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
+- Node.js 18+ and npm
+- Git
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd quiz-app
+   cd reactjs-quiz-app
    ```
 
-2. Install frontend dependencies:
+2. **Install dependencies**
    ```bash
+   # Install frontend dependencies
    npm install
-   ```
-
-3. Install backend dependencies:
-   ```bash
-   cd backend
-   npm install
-   cd ..
-   ```
-
-4. **Quick Start (Recommended)**: Use the startup script to run both servers:
-   ```bash
-   ./start-app.sh
-   ```
-
-   **Manual Start**: Or start servers individually:
    
-   Start the backend server:
-   ```bash
-   cd backend
-   npm start
+   # Install backend dependencies
+   cd backend && npm install && cd ..
    ```
 
-   In a new terminal, start the frontend development server:
+3. **Start the application**
    ```bash
+   # Option 1: Use the start script (recommended)
+   ./start-app.sh
+   
+   # Option 2: Manual start
+   # Terminal 1 - Backend
+   cd backend && npm start
+   
+   # Terminal 2 - Frontend  
    npm run dev
    ```
 
-5. Open your browser and navigate to `http://localhost:5173`
+4. **Access the application**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:3001
 
-### Backend API
+## 🔑 Access Identifiers
 
-The backend server runs on `http://localhost:3001` and provides the following endpoints:
+The application uses a unified landing page that accepts different types of identifiers:
 
-- `GET /api/health` - Health check endpoint
-- `GET /api/quiz/start` - Get 50 random questions for a new quiz session
-- `POST /api/quiz/submit` - Submit quiz answers and get results with explanations
-- `GET /api/quiz/stats` - Get quiz statistics and information
+### 🛡️ Admin Access
+- **Token**: `admin_2025_reactjs_quiz`
+- **Purpose**: Access admin dashboard for complete system management
+- **Features**: Student management, quiz assignment, analytics
 
-### CORS Configuration
+### 👤 Student Access (Sample Data)
+- **Student IDs**: `STUD0002`, `STUD0003`, `STUD0004`
+- **Purpose**: View personal profile and quiz history
+- **Features**: Progress tracking, detailed results, attempt history
 
-The application is configured to handle CORS properly:
-- Backend has comprehensive CORS headers for cross-origin requests
-- Frontend uses Vite proxy in development to avoid CORS issues
-- Production-ready configuration supports direct API calls
+### 📝 Quiz Taking (Sample Data)
+- **Attempt IDs**: `ATT000002`, `ATT000003`, `ATT000004`
+- **Purpose**: Take assigned quizzes
+- **Features**: Timed assessment, progress saving, immediate results
 
-## 🛠️ Available Scripts
+## 📋 User Workflows
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+### Admin Workflow
+1. **Login**: Enter admin token on landing page
+2. **Dashboard**: View system statistics and recent activity
+3. **Student Management**: Create, edit, or delete student accounts
+4. **Quiz Assignment**: Assign new quiz attempts to students
+5. **Monitoring**: Track completion rates and performance analytics
 
-## 🎮 How to Use
+### Student Profile Workflow
+1. **Access**: Enter student ID on landing page
+2. **Overview**: View personal statistics and progress
+3. **History**: Browse previous quiz attempts and results
+4. **Analysis**: Review detailed question-by-question breakdowns
 
-1. **Welcome Screen**: Learn about the ReactJS assessment and click "Start Quiz"
-2. **Answer Questions**: Select your answer from multiple choice options about React concepts
-3. **Timer Challenge**: Each question has a 30-second timer to test quick recall
-4. **Submit & Learn**: Click "Submit Answer" and read the detailed explanation
-5. **Track Progress**: Monitor your score and progress through the assessment
-6. **View Results**: Get your ReactJS proficiency level (Novice to Expert) with detailed analytics
-7. **Improve Skills**: Retake the quiz to enhance your React knowledge
+### Quiz Taking Workflow
+1. **Start**: Enter attempt ID on landing page
+2. **Validation**: System validates attempt and student information
+3. **Quiz**: Complete assessment within time limit
+4. **Results**: View immediate feedback and detailed analysis
 
-## 🏆 Proficiency Levels
-
-- **Expert (90-100%)**: ReactJS Master - Ready for complex React applications
-- **Advanced (80-89%)**: Strong ReactJS Skills - Solid understanding of React patterns
-- **Intermediate (70-79%)**: Good ReactJS Foundation - Comfortable with basic to intermediate concepts
-- **Beginner+ (60-69%)**: Learning ReactJS Well - Understanding core concepts
-- **Novice (0-59%)**: Keep Practicing ReactJS - Focus on fundamentals
-
-## 📱 Screenshots
-
-### Welcome Screen
-Modern welcome interface with quiz information and tips.
-
-### Quiz Interface
-- Progress bar showing completion status
-- Timer with color-coded countdown
-- Interactive multiple-choice buttons
-- Real-time score tracking
-
-### Results Screen
-- Comprehensive score display with grade
-- Performance statistics
-- Answer review section
-- Option to retake the quiz
-
-## 🎨 Design Features
-
-- **Color Scheme**: Modern gradient backgrounds with purple and blue tones
-- **Typography**: Clean, readable fonts with proper hierarchy
-- **Animations**: Smooth transitions and hover effects
-- **Accessibility**: Focus indicators and keyboard navigation support
-- **Responsive**: Mobile-first design approach
-
-## 🧠 Quiz Content
-
-The application includes 150+ comprehensive ReactJS questions stored securely on the backend, covering:
-- **Component Fundamentals**: Functional components, JSX syntax, props, events
-- **React Hooks**: useState, useEffect, useContext, useMemo, useRef, useCallback, useReducer
-- **State Management**: State updates, dependency arrays, context patterns, complex state logic
-- **Performance**: Virtual DOM, React.memo, optimization techniques, reconciliation
-- **Best Practices**: Event handling, list keys, component patterns, error boundaries
-- **Advanced Concepts**: Refs, fragments, lifecycle equivalents, HOCs, lazy loading
-- **Modern React**: Suspense, concurrent features, strict mode, debugging tools
-
-The backend randomly selects 50 questions per quiz attempt and validates all answers server-side. Each question includes detailed explanations to help improve ReactJS understanding.
-
-## 🔧 Technical Stack
-
-- **Frontend**: React 18.2.0
-- **Backend**: Node.js with Express.js
-- **Build Tool**: Vite 7.0.0
-- **Styling**: CSS3 with custom properties
-- **State Management**: React Hooks (useState, useEffect)
-- **API Communication**: Fetch API for backend integration
-- **Code Quality**: ESLint configuration
-
-## 📁 Project Structure
+## 🏗️ Project Structure
 
 ```
-├── backend/
+reactjs-quiz-app/
+├── src/                          # Frontend React application
+│   ├── components/               # React components
+│   │   ├── LandingPage.jsx       # Unified identifier entry
+│   │   ├── AdminDashboard.jsx    # Admin management interface
+│   │   ├── StudentProfile.jsx    # Student profile and history
+│   │   ├── QuizTaker.jsx         # Quiz execution wrapper
+│   │   ├── Quiz.jsx              # Core quiz component
+│   │   └── Results.jsx           # Results display
+│   ├── services/                 # API communication
+│   │   └── api.js                # API service layer
+│   └── data/                     # Quiz questions database
+├── backend/                      # Node.js backend API
 │   ├── src/
-│   │   ├── controllers/
-│   │   │   └── quizController.js    # Quiz logic and API endpoints
-│   │   ├── data/
-│   │   │   └── questions.js         # Master question database
-│   │   ├── routes/
-│   │   │   └── quiz.js              # Quiz API routes
-│   │   ├── utils/
-│   │   │   └── questionUtils.js     # Question randomization utilities
-│   │   └── app.js                   # Express application setup
-│   ├── package.json
-│   └── server.js                    # Backend server entry point
-├── src/
-│   ├── components/
-│   │   ├── Welcome.jsx              # Landing page component
-│   │   ├── Welcome.css              # Welcome page styles
-│   │   ├── Quiz.jsx                 # Main quiz component
-│   │   ├── Quiz.css                 # Quiz interface styles
-│   │   ├── Results.jsx              # Results display component
-│   │   └── Results.css              # Results page styles
-│   ├── services/
-│   │   └── api.js                   # API communication service
-│   ├── App.jsx                      # Main application component
-│   ├── App.css                      # Global application styles
-│   ├── index.css                    # Global CSS reset and base styles
-│   └── main.jsx                     # Application entry point
-└── package.json                     # Frontend dependencies
+│   │   ├── controllers/          # API request handlers
+│   │   │   ├── adminController.js    # Admin operations
+│   │   │   ├── studentController.js  # Student operations
+│   │   │   ├── authController.js     # Authentication
+│   │   │   └── quizController.js     # Quiz operations
+│   │   ├── routes/               # API route definitions
+│   │   │   ├── admin.js          # Admin routes
+│   │   │   ├── student.js        # Student routes
+│   │   │   ├── auth.js           # Authentication routes
+│   │   │   └── quiz.js           # Quiz routes
+│   │   ├── middleware/           # Authentication middleware
+│   │   │   └── auth.js           # Role-based authentication
+│   │   ├── data/                 # Data management
+│   │   │   └── users.js          # In-memory user/attempt storage
+│   │   └── utils/                # Utility functions
+│   └── server.js                 # Express server entry point
+├── public/                       # Static assets
+├── docs/                         # Documentation
+└── scripts/                      # Utility scripts
+    ├── start-app.sh              # Application launcher
+    ├── git-workflow.sh           # Git workflow helper
+    └── test-cors.sh              # Backend connectivity test
 ```
 
-## 🎯 Features in Detail
+## 📊 API Documentation
 
-### Timer System
-- 30-second countdown per question
-- Visual timer with color-coded indicators (green → orange → red)
-- Auto-submit when time expires
+### Authentication Endpoints
+```bash
+POST /api/auth/validate           # Validate identifier (admin/student/attempt)
+GET  /api/auth/info               # Get system information
+```
 
-### Scoring System
-- Real-time score tracking
-- Percentage calculation
-- Letter grades (A+, A, B, C, F)
-- Performance feedback
+### Admin Endpoints (Requires admin token)
+```bash
+GET  /api/admin/dashboard/stats   # Dashboard statistics
+GET  /api/admin/students          # List all students
+POST /api/admin/students          # Create new student
+PUT  /api/admin/students/:id      # Update student
+DELETE /api/admin/students/:id    # Delete student
+POST /api/admin/quiz-attempts/assign  # Assign quiz attempt
+GET  /api/admin/quiz-attempts     # List all attempts
+```
 
-### Results Analytics
-- Total score and percentage
-- Correct/incorrect/skipped question counts
-- Average time per question
-- Individual question review
+### Student Endpoints (Requires student ID)
+```bash
+GET /api/student/profile/:studentId           # Get student profile
+GET /api/student/profile/:studentId/attempts  # Get student attempts
+GET /api/student/attempt/:attemptId/results   # Get attempt results
+```
 
-## 🚀 Future Enhancements
+### Quiz Endpoints
+```bash
+GET  /api/quiz/start/:attemptId   # Start quiz for attempt
+POST /api/quiz/submit             # Submit quiz answers
+GET  /api/quiz/stats              # Quiz statistics
+```
 
-- [ ] Multiple quiz categories
-- [ ] Difficulty levels (Easy, Medium, Hard)
-- [ ] User accounts and progress saving
-- [ ] Leaderboards
-- [ ] Question randomization
-- [ ] Audio feedback
-- [ ] Dark/light theme toggle
-- [ ] Export results as PDF
-- [ ] Social sharing features
-- [ ] Administrative dashboard for adding questions
+## 🔧 Development
+
+### Testing Backend APIs
+```bash
+# Test admin authentication
+curl -X POST http://localhost:3001/api/auth/validate \
+  -H "Content-Type: application/json" \
+  -d '{"identifier": "admin_2025_reactjs_quiz"}'
+
+# Test student ID validation
+curl -X POST http://localhost:3001/api/auth/validate \
+  -H "Content-Type: application/json" \
+  -d '{"identifier": "STUD0002"}'
+
+# Test admin endpoints
+curl -X GET http://localhost:3001/api/admin/students \
+  -H "Authorization: admin_2025_reactjs_quiz"
+```
+
+### Git Workflow
+```bash
+# Use the workflow helper
+./git-workflow.sh
+
+# Available commands:
+./git-workflow.sh status           # Show git status
+./git-workflow.sh new-feature      # Create feature branch
+./git-workflow.sh commit           # Structured commit
+./git-workflow.sh log              # View commit history
+```
+
+### Development Guidelines
+- **Frontend**: Use functional components with hooks
+- **Backend**: Follow RESTful API principles
+- **Authentication**: Implement proper role-based access
+- **Error Handling**: Provide user-friendly error messages
+- **Testing**: Test both frontend and backend changes
+
+## 🎯 Quiz Content
+
+The application includes 200+ React.js questions covering:
+
+### 📚 Fundamental Concepts
+- Component creation and structure
+- JSX syntax and best practices
+- Props and component communication
+- Event handling and user interaction
+
+### 🎣 React Hooks
+- useState for state management
+- useEffect for lifecycle and side effects
+- useContext for context consumption
+- useMemo and useCallback for optimization
+- Custom hooks development
+
+### 🏗️ Advanced Patterns
+- Higher-Order Components (HOCs)
+- Render Props pattern
+- Compound components
+- Error boundaries
+
+### ⚡ Performance Optimization
+- React.memo for component memoization
+- Virtual DOM understanding
+- Bundle splitting and lazy loading
+- Performance profiling techniques
+
+### 🧪 Testing
+- Unit testing with Jest
+- React Testing Library
+- Component testing strategies
+- Integration testing approaches
+
+## 🔒 Security Features
+
+- **Role-based authentication** with middleware protection
+- **Input validation** for all user inputs
+- **XSS protection** with content sanitization
+- **CORS configuration** for secure cross-origin requests
+- **Session management** with proper logout handling
+- **API rate limiting** to prevent abuse
+
+## 🚦 Production Deployment
+
+### Environment Configuration
+```bash
+# Frontend (build time)
+VITE_API_URL=https://your-api-domain.com/api
+
+# Backend (runtime)
+PORT=3001
+NODE_ENV=production
+DATABASE_URL=your-database-connection
+ADMIN_TOKEN=your-secure-admin-token
+```
+
+### Build Process
+```bash
+# Build frontend
+npm run build
+
+# Deploy backend
+cd backend && npm start
+```
+
+### Database Migration
+For production, replace the in-memory storage in `backend/src/data/users.js` with a proper database solution like PostgreSQL or MongoDB.
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Follow coding guidelines** in `CONTRIBUTING.md`
+4. **Write tests** for new functionality
+5. **Update documentation** for new features
+6. **Submit a pull request** with detailed description
+
+### Contribution Areas
+- Additional quiz questions and explanations
+- UI/UX improvements and animations
+- Performance optimizations
+- Mobile responsiveness enhancements
+- Accessibility improvements
+- Test coverage expansion
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📂 Version Control
+## 🆘 Support
 
-This project uses Git for version control. Key branches:
-- `main` - Production-ready code
-- `develop` - Development branch for new features
-- `feature/*` - Feature branches
+### Common Issues
+1. **Backend not starting**: Check if port 3001 is available
+2. **API connection errors**: Verify backend is running and CORS is configured
+3. **Authentication failures**: Ensure correct identifiers are being used
 
-### Git Workflow
+### Getting Help
+- Check the console for error messages
+- Review the API documentation for correct endpoints
+- Verify all dependencies are installed correctly
+- Look at existing issues in the repository
 
-1. Clone the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Make your changes and commit: `git commit -m "Add your feature"`
-4. Push to your branch: `git push origin feature/your-feature-name`
-5. Create a Pull Request
+### Debug Information
+```bash
+# Check backend status
+curl http://localhost:3001/api/health
 
-### Commit Message Convention
+# View backend logs
+cd backend && npm start
 
-Use conventional commits:
-- `feat:` - New features
-- `fix:` - Bug fixes
-- `docs:` - Documentation changes
-- `style:` - Code style changes
-- `refactor:` - Code refactoring
-- `test:` - Adding tests
-- `chore:` - Maintenance tasks
-
-## 🙏 Acknowledgments
-
-- React team for the amazing framework
-- Vite team for the blazing fast build tool
-- Contributors and testers
-
-## 📞 Support
-
-If you have any questions or issues, please open an issue on GitHub or contact the development team.
+# Check frontend build
+npm run build
+```
 
 ---
 
-**Enjoy testing your knowledge!** 🧠✨+ Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Happy coding!** 🚀 This application demonstrates modern React.js development with role-based architecture, comprehensive testing, and professional UI/UX design.
