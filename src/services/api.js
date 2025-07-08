@@ -26,10 +26,10 @@ class QuizApiService {
     }
   }
 
-  // Start a new quiz and get random questions
-  static async startQuiz() {
+  // Start a quiz for a specific attempt ID
+  static async startQuiz(attemptId) {
     try {
-      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/quiz/start`, {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/quiz/start/${attemptId}`, {
         method: 'GET',
       });
       
@@ -45,11 +45,12 @@ class QuizApiService {
   }
 
   // Submit quiz answers and get results
-  static async submitQuiz(answers, totalTime, timeLeft) {
+  static async submitQuiz(attemptId, answers, totalTime, timeLeft) {
     try {
       const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/quiz/submit`, {
         method: 'POST',
         body: JSON.stringify({
+          attemptId,
           answers,
           totalTime,
           timeLeft
@@ -64,6 +65,39 @@ class QuizApiService {
     } catch (error) {
       console.error('Error submitting quiz:', error);
       throw new Error(`Failed to submit quiz: ${error.message}`);
+    }
+  }
+
+  // Validate quiz attempt
+  static async validateQuizAttempt(attemptId) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/student/attempt/${attemptId}/validate`, {
+        method: 'GET',
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to validate quiz attempt');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error validating quiz attempt:', error);
+      throw new Error(`Failed to validate quiz attempt: ${error.message}`);
+    }
+  }
+
+  // Validate identifier (admin token, student ID, or attempt ID)
+  static async validateIdentifier(identifier) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/auth/validate`, {
+        method: 'POST',
+        body: JSON.stringify({ identifier }),
+      });
+      
+      return data;
+    } catch (error) {
+      console.error('Error validating identifier:', error);
+      throw error;
     }
   }
 

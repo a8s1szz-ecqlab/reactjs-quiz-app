@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import QuizApiService from '../services/api';
 import './Quiz.css';
 
-const Quiz = ({ questions, onQuizComplete }) => {
+const Quiz = ({ attemptId, questions, timeLimit, onQuizComplete }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState(new Array(questions.length).fill(null));
-  const [timeLeft, setTimeLeft] = useState(20 * 60); // 20 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(timeLimit || 20 * 60); // Use provided time limit or default to 20 minutes
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [quizStartTime] = useState(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,8 +58,8 @@ const Quiz = ({ questions, onQuizComplete }) => {
 
       const totalTime = Math.round((Date.now() - quizStartTime) / 1000);
       
-      // Submit to backend and get results
-      const results = await QuizApiService.submitQuiz(answersForSubmission, totalTime, timeLeft);
+      // Submit to backend with attempt ID and get results
+      const results = await QuizApiService.submitQuiz(attemptId, answersForSubmission, totalTime, timeLeft);
       
       // Pass results to parent component
       onQuizComplete(results);
@@ -94,7 +94,7 @@ const Quiz = ({ questions, onQuizComplete }) => {
   };
 
   const getTimerColor = () => {
-    const percentage = (timeLeft / (20 * 60)) * 100;
+    const percentage = (timeLeft / (timeLimit || 20 * 60)) * 100;
     if (percentage > 50) return '#4CAF50';
     if (percentage > 25) return '#FF9800';
     return '#F44336';

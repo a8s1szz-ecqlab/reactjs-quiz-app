@@ -1,60 +1,96 @@
 import { useState, useEffect } from 'react'
-import Welcome from './components/Welcome'
-import Quiz from './components/Quiz'
-import Results from './components/Results'
+import LandingPage from './components/LandingPage'
+import AdminDashboard from './components/AdminDashboard'
+import StudentProfile from './components/StudentProfile'
+import QuizTaker from './components/QuizTaker'
 import QuizApiService from './services/api'
 import './App.css'
 
 function App() {
-  const [gameState, setGameState] = useState('welcome') // 'welcome', 'quiz', 'results'
-  const [quizResults, setQuizResults] = useState(null)
-  const [currentQuestions, setCurrentQuestions] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [currentView, setCurrentView] = useState('landing') // 'landing', 'admin', 'student', 'quiz'
+  const [userType, setUserType] = useState(null) // 'admin', 'student', 'attempt'
+  const [userData, setUserData] = useState(null)
   const [error, setError] = useState(null)
   const [backendConnected, setBackendConnected] = useState(false)
 
-  // Check backend connection on app start
+  // Check for URL parameters on load
   useEffect(() => {
-    const checkBackend = async () => {
-      try {
-        await QuizApiService.healthCheck()
-        setBackendConnected(true)
-      } catch (error) {
-        console.error('Backend connection failed:', error)
-        setBackendConnected(false)
-        setError('Unable to connect to the quiz server. Please make sure the backend is running.')
-      }
-    }
+    const urlParams = new URLSearchParams(window.location.search)
+    const identifier = urlParams.get('id')
     
-    checkBackend()
+    if (identifier) {
+      handleIdentifierSubmit(null, { identifier })
+    } else {
+      checkBackend()
+    }
   }, [])
 
-  const handleStartQuiz = async () => {
-    setLoading(true)
+  const checkBackend = async () => {
+    try {
+      await QuizApiService.healthCheck()
+      setBackendConnected(true)
+    } catch (error) {
+      console.error('Backend connection failed:', error)
+      setBackendConnected(false)
+      setError('Unable to connect to the quiz server. Please make sure the backend is running.')
+    }
+  }
+
+  const handleIdentifierSubmit = async (type, data) => {
     setError(null)
     
     try {
-      const quizData = await QuizApiService.startQuiz()
-      setCurrentQuestions(quizData.questions)
-      setGameState('quiz')
+      // If called from URL parameter, validate the identifier first
+      if (!type && data.identifier) {
+        const validationResult = await QuizApiService.validateIdentifier(data.identifier)
+        if (validationResult.success) {
+          type = validationResult.type
+          data = validationResult.data
+        } else {
+          setError(validationResult.message)
+          return
+        }
+      }
+
+      setUserType(type)
+      setUserData(data)
+
+      switch (type) {
+        case 'admin':
+          setCurrentView('admin')
+          break
+        case 'student':
+          setCurrentView('student')
+          break
+        case 'attempt':
+          setCurrentView('quiz')
+          break
+        default:
+          setError('Unknown user type')
+      }
+
+      // Clear URL parameters after processing
+      if (window.location.search) {
+        window.history.replaceState({}, document.title, window.location.pathname)
+      }
+      
     } catch (error) {
-      console.error('Failed to start quiz:', error)
-      setError('Failed to start quiz. Please try again.')
-    } finally {
-      setLoading(false)
+      console.error('Error handling identifier:', error)
+      setError(error.message || 'Failed to validate identifier')
     }
   }
-
-  const handleQuizComplete = (results) => {
-    setQuizResults(results)
-    setGameState('results')
+  const handleLogout = () => {
+    setCurrentView('landing')
+    setUserType(null)
+    setUserData(null)
+    setError(null)
   }
 
-  const handleRestartQuiz = () => {
-    setQuizResults(null)
-    setCurrentQuestions([])
+  const handleExitQuiz = () => {
+    setCurrentView('landing')
+    setUserType(null)
+    setUserData(null)
     setError(null)
-    setGameState('welcome')
   }
 
   // Show error state if backend is not connected
@@ -80,26 +116,28 @@ function App() {
 
   return (
     <div className="app">
-      {gameState === 'welcome' && (
-        <Welcome 
-          onStartQuiz={handleStartQuiz}
-          totalQuestions={50}
-          loading={loading}
-          error={error}
+      {currentView === 'landing' && (
+        <LandingPage onIdentifierSubmit={handleIdentifierSubmit} />
+      )}
+      
+      {currentView === 'admin' && userData && (
+        <AdminDashboard 
+          adminToken={userData.role === 'admin' ? 'admin_2025_reactjs_quiz' : ''}
+          onLogout={handleLogout}
         />
       )}
       
-      {gameState === 'quiz' && currentQuestions.length > 0 && (
-        <Quiz 
-          questions={currentQuestions}
-          onQuizComplete={handleQuizComplete}
+      {currentView === 'student' && userData && (
+        <StudentProfile 
+          studentId={userData.studentId}
+          onLogout={handleLogout}
         />
       )}
       
-      {gameState === 'results' && (
-        <Results 
-          results={quizResults}
-          onRestartQuiz={handleRestartQuiz}
+      {currentView === 'quiz' && userData && (
+        <QuizTaker 
+          attemptId={userData.attemptId}
+          onExit={handleExitQuiz}
         />
       )}
     </div>

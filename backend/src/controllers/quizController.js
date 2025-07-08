@@ -1,16 +1,55 @@
 const { getQuizQuestions, validateAnswers, getProficiencyLevel } = require('../utils/questionUtils');
+const { findAttemptById, updateAttempt } = require('../data/users');
 
-// Start a new quiz - return 50 random questions
+// Start a quiz for a specific attempt - return 50 random questions
 const startQuiz = (req, res) => {
   try {
-    const questions = getQuizQuestions(50);
+    const { attemptId } = req.params;
+    
+    if (!attemptId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Attempt ID is required'
+      });
+    }
+
+    const attempt = findAttemptById(attemptId);
+    if (!attempt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Quiz attempt not found'
+      });
+    }
+
+    if (attempt.status === 'completed') {
+      return res.status(400).json({
+        success: false,
+        message: 'Quiz attempt already completed'
+      });
+    }
+
+    // Get questions if not already generated
+    let questions = attempt.questions;
+    if (!questions || questions.length === 0) {
+      questions = getQuizQuestions(50);
+      
+      // Update attempt with questions and start time
+      const updates = {
+        questions: questions,
+        status: 'in_progress',
+        startedAt: new Date().toISOString()
+      };
+      updateAttempt(attemptId, updates);
+    }
     
     res.json({
       success: true,
       data: {
+        attemptId: attempt.attemptId,
         questions: questions,
         totalQuestions: questions.length,
-        timeLimit: 1200, // 20 minutes in seconds
+        timeLimit: attempt.timeLimit,
+        startedAt: attempt.startedAt || new Date().toISOString(),
         message: 'Quiz started successfully'
       }
     });
@@ -27,13 +66,36 @@ const startQuiz = (req, res) => {
 // Submit quiz answers and return results
 const submitQuiz = (req, res) => {
   try {
-    const { answers, totalTime, timeLeft } = req.body;
+    const { attemptId, answers, totalTime, timeLeft } = req.body;
     
     // Validate request data
+    if (!attemptId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Attempt ID is required'
+      });
+    }
+
     if (!answers || !Array.isArray(answers)) {
       return res.status(400).json({
         success: false,
         message: 'Invalid answers data'
+      });
+    }
+
+    // Find the quiz attempt
+    const attempt = findAttemptById(attemptId);
+    if (!attempt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Quiz attempt not found'
+      });
+    }
+
+    if (attempt.status === 'completed') {
+      return res.status(400).json({
+        success: false,
+        message: 'Quiz attempt already completed'
       });
     }
     
@@ -52,6 +114,15 @@ const submitQuiz = (req, res) => {
       incorrectAnswers: results.incorrectAnswers,
       detailedResults: results.detailedResults
     };
+
+    // Update attempt with results
+    const updates = {
+      status: 'completed',
+      completedAt: new Date().toISOString(),
+      answers: answers,
+      results: responseData
+    };
+    updateAttempt(attemptId, updates);
     
     res.json({
       success: true,
