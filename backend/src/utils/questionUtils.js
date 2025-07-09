@@ -53,12 +53,18 @@ const validateAnswers = (answers) => {
   const totalQuestions = answers.length;
   const percentage = Math.round((correctCount / totalQuestions) * 100);
   
+  // Separate skipped and incorrect answers
+  const skippedAnswers = detailedResults.filter(result => result.selectedAnswer === null);
+  const incorrectAnswers = detailedResults.filter(result => !result.isCorrect && result.selectedAnswer !== null);
+  
   return {
     score: correctCount,
     totalQuestions: totalQuestions,
     percentage: percentage,
     detailedResults: detailedResults,
-    incorrectAnswers: detailedResults.filter(result => !result.isCorrect)
+    incorrectAnswers: incorrectAnswers,
+    skippedAnswers: skippedAnswers,
+    skippedCount: skippedAnswers.length
   };
 };
 

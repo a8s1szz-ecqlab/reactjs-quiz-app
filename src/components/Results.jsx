@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Results.css';
 
-const Results = ({ results, onBackToHome, showRetake = true }) => {
+const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true }) => {
   const { 
     score, 
     totalQuestions, 
@@ -10,6 +10,7 @@ const Results = ({ results, onBackToHome, showRetake = true }) => {
     totalTime, 
     timeLeft, 
     incorrectAnswers = [], 
+    skippedCount = 0,
     detailedResults = [],
     error 
   } = results;
@@ -23,7 +24,11 @@ const Results = ({ results, onBackToHome, showRetake = true }) => {
     message: 'Assessment completed'
   };
   
-  const skippedAnswers = incorrectAnswers.filter(answer => answer.selectedAnswer === null);
+  // Filter out skipped questions from incorrect answers for display
+  const actualIncorrectAnswers = incorrectAnswers.filter(answer => answer.selectedAnswer !== null);
+  
+  // Calculate skipped count from local data if not provided by backend
+  const skippedQuestions = skippedCount || detailedResults.filter(result => result.selectedAnswer === null).length;
 
   const formatTime = (seconds) => {
     return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
@@ -75,11 +80,11 @@ const Results = ({ results, onBackToHome, showRetake = true }) => {
             <div className="stat-label">Correct</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">{incorrectAnswers.length}</div>
+            <div className="stat-value">{actualIncorrectAnswers.length}</div>
             <div className="stat-label">Incorrect</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">{skippedAnswers.length}</div>
+            <div className="stat-value">{skippedQuestions}</div>
             <div className="stat-label">Skipped</div>
           </div>
           <div className="stat-item">
@@ -94,7 +99,7 @@ const Results = ({ results, onBackToHome, showRetake = true }) => {
             onClick={() => setShowReview(!showReview)}
           >
             <span className="button-icon">{showReview ? '👁️' : '🔍'}</span>
-            {showReview ? 'Hide' : 'Review'} Incorrect Answers ({incorrectAnswers.length})
+            {showReview ? 'Hide' : 'Review'} Incorrect Answers ({actualIncorrectAnswers.length})
           </button>
           
           {showRetake ? (
@@ -113,21 +118,19 @@ const Results = ({ results, onBackToHome, showRetake = true }) => {
         {showReview && (
           <div className="review-section">
             <h3 className="review-title">Questions You Got Wrong</h3>
-            {incorrectAnswers.length === 0 ? (
+            {actualIncorrectAnswers.length === 0 ? (
               <div className="perfect-score">
                 🎉 Perfect! You got all questions correct!
               </div>
             ) : (
               <div className="incorrect-answers">
-                {incorrectAnswers.map((answer, index) => {
+                {actualIncorrectAnswers.map((answer, index) => {
                   const questionIndex = detailedResults.findIndex(ua => ua.questionId === answer.questionId);
                   return (
                     <div key={answer.questionId} className="incorrect-answer-item">
                       <div className="question-header">
                         <span className="question-number">{questionIndex + 1}</span>
-                        <span className="answer-status incorrect">
-                          {answer.selectedAnswer === null ? '⏱ Skipped' : '✗ Incorrect'}
-                        </span>
+                        <span className="answer-status incorrect">✗ Incorrect</span>
                       </div>
                       
                       <div className="question-content">

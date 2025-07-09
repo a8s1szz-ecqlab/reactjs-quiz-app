@@ -67,6 +67,7 @@ async function createSampleCompletedAttempt() {
       totalTime: 335, // Sum of timeSpent
       timeLeft: 865, // 1200 - 335
       incorrectAnswers: incorrectAnswers,
+      skippedCount: 0, // No skipped questions in this sample
       detailedResults: detailedResults,
       completedAt: new Date().toISOString()
     };

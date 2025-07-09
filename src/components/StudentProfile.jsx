@@ -362,11 +362,11 @@ const StudentProfile = ({ studentId, onLogout }) => {
                   <div className="stat-label">Correct</div>
                 </div>
                 <div className="stat-item">
-                  <div className="stat-value">{attemptDetails.results.incorrectAnswers?.length || 0}</div>
+                  <div className="stat-value">{attemptDetails.results.incorrectAnswers?.filter(q => q.selectedAnswer !== null).length || 0}</div>
                   <div className="stat-label">Incorrect</div>
                 </div>
                 <div className="stat-item">
-                  <div className="stat-value">{attemptDetails.results.incorrectAnswers?.filter(q => q.selectedAnswer === null).length || 0}</div>
+                  <div className="stat-value">{attemptDetails.results.skippedCount || attemptDetails.results.incorrectAnswers?.filter(q => q.selectedAnswer === null).length || 0}</div>
                   <div className="stat-label">Skipped</div>
                 </div>
                 <div className="stat-item">
@@ -397,17 +397,15 @@ const StudentProfile = ({ studentId, onLogout }) => {
                 </div>
               </div>
 
-              {attemptDetails.results.incorrectAnswers && attemptDetails.results.incorrectAnswers.length > 0 && (
+              {attemptDetails.results.incorrectAnswers && attemptDetails.results.incorrectAnswers.filter(q => q.selectedAnswer !== null).length > 0 && (
                 <div className="review-section">
                   <h3 className="review-title">Questions You Got Wrong</h3>
                   <div className="incorrect-answers">
-                    {attemptDetails.results.incorrectAnswers.map((answer, index) => (
+                    {attemptDetails.results.incorrectAnswers.filter(q => q.selectedAnswer !== null).map((answer, index) => (
                       <div key={answer.questionId} className="incorrect-answer-item">
                         <div className="question-header">
                           <span className="question-number">Q{index + 1}</span>
-                          <span className="answer-status incorrect">
-                            {answer.selectedAnswer === null ? '⏱ Skipped' : '✗ Incorrect'}
-                          </span>
+                          <span className="answer-status incorrect">✗ Incorrect</span>
                         </div>
                         
                         <div className="question-content">
@@ -448,7 +446,7 @@ const StudentProfile = ({ studentId, onLogout }) => {
                 </div>
               )}
 
-              {attemptDetails.results.incorrectAnswers && attemptDetails.results.incorrectAnswers.length === 0 && (
+              {attemptDetails.results.incorrectAnswers && attemptDetails.results.incorrectAnswers.filter(q => q.selectedAnswer !== null).length === 0 && (
                 <div className="perfect-score">
                   🎉 Perfect! You got all questions correct!
                 </div>

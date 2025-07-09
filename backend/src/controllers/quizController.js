@@ -112,6 +112,7 @@ const submitQuiz = async (req, res) => {
       totalTime: totalTime || 0,
       timeLeft: timeLeft || 0,
       incorrectAnswers: results.incorrectAnswers,
+      skippedCount: results.skippedCount,
       detailedResults: results.detailedResults
     };
 
