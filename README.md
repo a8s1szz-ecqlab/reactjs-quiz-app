@@ -1,13 +1,14 @@
 # ReactJS Proficiency Quiz Application
 
-A comprehensive React.js quiz application with **role-based access control**, designed to assess ReactJS proficiency through interactive quizzes with admin management and student tracking capabilities.
+A comprehensive React.js quiz application with **role-based access control** and **persistent file-based database**, designed to assess ReactJS proficiency through interactive quizzes with admin management and student tracking capabilities.
 
-![Quiz Application](https://img.shields.io/badge/React-18.2.0-blue) ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple) ![Node.js](https://img.shields.io/badge/Node.js-16+-green) ![License](https://img.shields.io/badge/license-MIT-green)
+![Quiz Application](https://img.shields.io/badge/React-18.2.0-blue) ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple) ![Node.js](https://img.shields.io/badge/Node.js-16+-green) ![Database](https://img.shields.io/badge/Database-LowDB-orange) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## 📋 Table of Contents
 
 - [Features](#-features)
 - [Quick Start](#-quick-start)
+- [Database](#-database)
 - [Access Identifiers](#-access-identifiers)
 - [User Workflows](#-user-workflows)
 - [Project Structure](#-project-structure)
@@ -85,7 +86,25 @@ A comprehensive React.js quiz application with **role-based access control**, de
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:3001
 
-## 🔑 Access Identifiers
+## �️ Database
+
+### Persistent File-Based Storage
+The application now uses **LowDB**, a lightweight JSON database that provides data persistence across server restarts:
+
+- **Database File**: `backend/src/data/quiz_database.json`
+- **Format**: Human-readable JSON
+- **Features**: Automatic initialization, backup functionality, async operations
+- **Benefits**: No database server required, easy development setup
+
+### Sample Data (Auto-Generated)
+The database initializes with sample data:
+- **3 Students**: John Doe, Jane Smith, Mike Johnson
+- **3 Quiz Attempts**: One per student, all in "assigned" status
+- **Admin Token**: `admin_2025_reactjs_quiz`
+
+> 📖 **For detailed database documentation**, see [DATABASE.md](./DATABASE.md)
+
+## �🔑 Access Identifiers
 
 The application uses a unified landing page that accepts different types of identifiers:
 
@@ -95,12 +114,12 @@ The application uses a unified landing page that accepts different types of iden
 - **Features**: Student management, quiz assignment, analytics
 
 ### 👤 Student Access (Sample Data)
-- **Student IDs**: `STUD0002`, `STUD0003`, `STUD0004`
+- **Student IDs**: `STUD0001`, `STUD0002`, `STUD0003`
 - **Purpose**: View personal profile and quiz history
 - **Features**: Progress tracking, detailed results, attempt history
 
 ### 📝 Quiz Taking (Sample Data)
-- **Attempt IDs**: `ATT000002`, `ATT000003`, `ATT000004`
+- **Attempt IDs**: `ATT000001`, `ATT000002`, `ATT000003`
 - **Purpose**: Take assigned quizzes
 - **Features**: Timed assessment, progress saving, immediate results
 

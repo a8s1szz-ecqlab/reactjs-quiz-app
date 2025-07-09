@@ -2,7 +2,7 @@ const { getQuizQuestions, validateAnswers, getProficiencyLevel } = require('../u
 const { findAttemptById, updateAttempt } = require('../data/users');
 
 // Start a quiz for a specific attempt - return 50 random questions
-const startQuiz = (req, res) => {
+const startQuiz = async (req, res) => {
   try {
     const { attemptId } = req.params;
     
@@ -13,7 +13,7 @@ const startQuiz = (req, res) => {
       });
     }
 
-    const attempt = findAttemptById(attemptId);
+    const attempt = await findAttemptById(attemptId);
     if (!attempt) {
       return res.status(404).json({
         success: false,
@@ -39,7 +39,7 @@ const startQuiz = (req, res) => {
         status: 'in_progress',
         startedAt: new Date().toISOString()
       };
-      updateAttempt(attemptId, updates);
+      await updateAttempt(attemptId, updates);
     }
     
     res.json({
@@ -64,7 +64,7 @@ const startQuiz = (req, res) => {
 };
 
 // Submit quiz answers and return results
-const submitQuiz = (req, res) => {
+const submitQuiz = async (req, res) => {
   try {
     const { attemptId, answers, totalTime, timeLeft } = req.body;
     
@@ -84,7 +84,7 @@ const submitQuiz = (req, res) => {
     }
 
     // Find the quiz attempt
-    const attempt = findAttemptById(attemptId);
+    const attempt = await findAttemptById(attemptId);
     if (!attempt) {
       return res.status(404).json({
         success: false,
@@ -122,7 +122,7 @@ const submitQuiz = (req, res) => {
       answers: answers,
       results: responseData
     };
-    updateAttempt(attemptId, updates);
+    await updateAttempt(attemptId, updates);
     
     res.json({
       success: true,
@@ -141,7 +141,7 @@ const submitQuiz = (req, res) => {
 };
 
 // Get quiz statistics (optional endpoint)
-const getQuizStats = (req, res) => {
+const getQuizStats = async (req, res) => {
   try {
     const { quizData } = require('../data/questions');
     

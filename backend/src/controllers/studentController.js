@@ -6,10 +6,10 @@ const {
 } = require('../data/users');
 
 // Get student profile
-const getStudentProfile = (req, res) => {
+const getStudentProfile = async (req, res) => {
   try {
     const { studentId } = req.params;
-    const student = findUserByStudentId(studentId);
+    const student = await await findUserByStudentId(studentId);
     
     if (!student) {
       return res.status(404).json({
@@ -19,7 +19,7 @@ const getStudentProfile = (req, res) => {
     }
 
     // Get student's quiz attempts
-    const attempts = getAttemptsByStudentId(studentId);
+    const attempts = await await getAttemptsByStudentId(studentId);
     
     // Calculate statistics
     const totalAttempts = attempts.length;
@@ -73,10 +73,10 @@ const getStudentProfile = (req, res) => {
 };
 
 // Get all quiz attempts for a student
-const getStudentQuizAttempts = (req, res) => {
+const getStudentQuizAttempts = async (req, res) => {
   try {
     const { studentId } = req.params;
-    const student = findUserByStudentId(studentId);
+    const student = await await findUserByStudentId(studentId);
     
     if (!student) {
       return res.status(404).json({
@@ -85,7 +85,7 @@ const getStudentQuizAttempts = (req, res) => {
       });
     }
 
-    const attempts = getAttemptsByStudentId(studentId);
+    const attempts = await await getAttemptsByStudentId(studentId);
     
     res.json({
       success: true,
@@ -101,10 +101,12 @@ const getStudentQuizAttempts = (req, res) => {
 };
 
 // Get detailed results for a specific quiz attempt
-const getQuizAttemptResults = (req, res) => {
+const getQuizAttemptResults = async (req, res) => {
   try {
     const { attemptId } = req.params;
-    const attempt = findAttemptById(attemptId);
+    const studentId = req.headers['student-id'] || req.query.studentId;
+    
+    const attempt = await findAttemptById(attemptId);
     
     if (!attempt) {
       return res.status(404).json({
@@ -113,11 +115,11 @@ const getQuizAttemptResults = (req, res) => {
       });
     }
 
-    // Verify student access (if not admin)
-    if (req.user.role !== 'admin' && req.user.studentId !== attempt.studentId) {
+    // Verify student access (only the student who owns the attempt can view it)
+    if (studentId && studentId !== attempt.studentId) {
       return res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: 'Access denied - You can only view your own quiz attempts'
       });
     }
 
@@ -129,7 +131,7 @@ const getQuizAttemptResults = (req, res) => {
     }
 
     // Get student information
-    const student = findUserByStudentId(attempt.studentId);
+    const student = await findUserByStudentId(attempt.studentId);
     
     res.json({
       success: true,
@@ -161,10 +163,10 @@ const getQuizAttemptResults = (req, res) => {
 };
 
 // Validate quiz attempt access for taking quiz
-const validateQuizAttempt = (req, res) => {
+const validateQuizAttempt = async (req, res) => {
   try {
     const { attemptId } = req.params;
-    const attempt = findAttemptById(attemptId);
+    const attempt = await findAttemptById(attemptId);
     
     if (!attempt) {
       return res.status(404).json({
@@ -186,7 +188,7 @@ const validateQuizAttempt = (req, res) => {
     }
 
     // Get student information
-    const student = findUserByStudentId(attempt.studentId);
+    const student = await findUserByStudentId(attempt.studentId);
     
     res.json({
       success: true,
@@ -215,10 +217,10 @@ const validateQuizAttempt = (req, res) => {
 };
 
 // Start quiz attempt
-const startQuizAttempt = (req, res) => {
+const startQuizAttempt = async (req, res) => {
   try {
     const { attemptId } = req.params;
-    const attempt = findAttemptById(attemptId);
+    const attempt = await findAttemptById(attemptId);
     
     if (!attempt) {
       return res.status(404).json({
@@ -247,7 +249,7 @@ const startQuizAttempt = (req, res) => {
       startedAt: new Date().toISOString()
     };
 
-    const updatedAttempt = updateAttempt(attemptId, updates);
+    const updatedAttempt = await updateAttempt(attemptId, updates);
     
     res.json({
       success: true,

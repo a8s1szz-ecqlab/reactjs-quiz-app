@@ -1,6 +1,6 @@
 const { 
-  users, 
-  quizAttempts, 
+  getAllUsers,
+  getAllAttempts,
   createUser, 
   createQuizAttempt, 
   findUserById, 
@@ -11,9 +11,9 @@ const {
 } = require('../data/users');
 
 // Get all students
-const getAllStudents = (req, res) => {
+const getAllStudents = async (req, res) => {
   try {
-    const students = users.filter(user => user.isActive);
+    const students = await getAllUsers();
     res.json({
       success: true,
       data: students,
@@ -29,10 +29,10 @@ const getAllStudents = (req, res) => {
 };
 
 // Get student by ID
-const getStudentById = (req, res) => {
+const getStudentById = async (req, res) => {
   try {
     const { id } = req.params;
-    const student = findUserById(parseInt(id));
+    const student = await findUserById(parseInt(id));
     
     if (!student) {
       return res.status(404).json({
@@ -42,7 +42,7 @@ const getStudentById = (req, res) => {
     }
 
     // Get student's quiz attempts
-    const attempts = getAttemptsByStudentId(student.studentId);
+    const attempts = await getAttemptsByStudentId(student.studentId);
     
     res.json({
       success: true,
@@ -61,7 +61,7 @@ const getStudentById = (req, res) => {
 };
 
 // Create new student
-const createStudent = (req, res) => {
+const createStudent = async (req, res) => {
   try {
     const { name, email, studentId } = req.body;
     
@@ -73,7 +73,8 @@ const createStudent = (req, res) => {
     }
 
     // Check if email already exists
-    const existingUser = users.find(user => user.email === email && user.isActive);
+    const allUsers = await getAllUsers();
+    const existingUser = allUsers.find(user => user.email === email);
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -83,7 +84,7 @@ const createStudent = (req, res) => {
 
     // Check if studentId already exists (if provided)
     if (studentId) {
-      const existingStudentId = findUserByStudentId(studentId);
+      const existingStudentId = await findUserByStudentId(studentId);
       if (existingStudentId) {
         return res.status(409).json({
           success: false,
@@ -92,7 +93,7 @@ const createStudent = (req, res) => {
       }
     }
 
-    const newStudent = createUser(name, email, studentId);
+    const newStudent = await createUser(name, email, studentId);
     
     res.status(201).json({
       success: true,
@@ -109,12 +110,12 @@ const createStudent = (req, res) => {
 };
 
 // Update student
-const updateStudent = (req, res) => {
+const updateStudent = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email } = req.body;
     
-    const student = findUserById(parseInt(id));
+    const student = await findUserById(parseInt(id));
     if (!student) {
       return res.status(404).json({
         success: false,
@@ -138,7 +139,7 @@ const updateStudent = (req, res) => {
     if (email) updates.email = email;
     updates.updatedAt = new Date().toISOString();
 
-    const updatedStudent = updateUser(parseInt(id), updates);
+    const updatedStudent = await updateUser(parseInt(id), updates);
     
     res.json({
       success: true,
@@ -155,11 +156,11 @@ const updateStudent = (req, res) => {
 };
 
 // Delete student (soft delete)
-const deleteStudent = (req, res) => {
+const deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
     
-    const student = findUserById(parseInt(id));
+    const student = await findUserById(parseInt(id));
     if (!student) {
       return res.status(404).json({
         success: false,
@@ -167,7 +168,7 @@ const deleteStudent = (req, res) => {
       });
     }
 
-    const deleted = deleteUser(parseInt(id));
+    const deleted = await deleteUser(parseInt(id));
     
     if (deleted) {
       res.json({
@@ -190,7 +191,7 @@ const deleteStudent = (req, res) => {
 };
 
 // Assign quiz attempt to student
-const assignQuizAttempt = (req, res) => {
+const assignQuizAttempt = async (req, res) => {
   try {
     const { studentId } = req.body;
     
@@ -201,7 +202,7 @@ const assignQuizAttempt = (req, res) => {
       });
     }
 
-    const student = findUserByStudentId(studentId);
+    const student = await findUserByStudentId(studentId);
     if (!student) {
       return res.status(404).json({
         success: false,
@@ -209,7 +210,7 @@ const assignQuizAttempt = (req, res) => {
       });
     }
 
-    const attempt = createQuizAttempt(studentId, 'admin');
+    const attempt = await createQuizAttempt(studentId, 'admin');
     
     res.status(201).json({
       success: true,
@@ -226,15 +227,16 @@ const assignQuizAttempt = (req, res) => {
 };
 
 // Get all quiz attempts
-const getAllQuizAttempts = (req, res) => {
+const getAllQuizAttempts = async (req, res) => {
   try {
-    const attempts = quizAttempts.map(attempt => {
-      const student = findUserByStudentId(attempt.studentId);
+    const allAttempts = await getAllAttempts();
+    const attempts = await Promise.all(allAttempts.map(async (attempt) => {
+      const student = await findUserByStudentId(attempt.studentId);
       return {
         ...attempt,
         studentName: student ? student.name : 'Unknown'
       };
-    });
+    }));
     
     res.json({
       success: true,
@@ -251,11 +253,11 @@ const getAllQuizAttempts = (req, res) => {
 };
 
 // Get quiz attempts by student
-const getQuizAttemptsByStudent = (req, res) => {
+const getQuizAttemptsByStudent = async (req, res) => {
   try {
     const { studentId } = req.params;
     
-    const student = findUserByStudentId(studentId);
+    const student = await findUserByStudentId(studentId);
     if (!student) {
       return res.status(404).json({
         success: false,
@@ -263,7 +265,7 @@ const getQuizAttemptsByStudent = (req, res) => {
       });
     }
 
-    const attempts = getAttemptsByStudentId(studentId);
+    const attempts = await getAttemptsByStudentId(studentId);
     
     res.json({
       success: true,
@@ -282,13 +284,15 @@ const getQuizAttemptsByStudent = (req, res) => {
 };
 
 // Get dashboard statistics
-const getDashboardStats = (req, res) => {
+const getDashboardStats = async (req, res) => {
   try {
-    const totalStudents = users.filter(user => user.isActive).length;
-    const totalAttempts = quizAttempts.length;
-    const completedAttempts = quizAttempts.filter(attempt => attempt.status === 'completed').length;
-    const pendingAttempts = quizAttempts.filter(attempt => attempt.status === 'assigned').length;
-    const inProgressAttempts = quizAttempts.filter(attempt => attempt.status === 'in_progress').length;
+    const allUsers = await getAllUsers();
+    const allAttempts = await getAllAttempts();
+    const totalStudents = allUsers.length;
+    const totalAttempts = allAttempts.length;
+    const completedAttempts = allAttempts.filter(attempt => attempt.status === 'completed').length;
+    const pendingAttempts = allAttempts.filter(attempt => attempt.status === 'assigned').length;
+    const inProgressAttempts = allAttempts.filter(attempt => attempt.status === 'in_progress').length;
 
     res.json({
       success: true,

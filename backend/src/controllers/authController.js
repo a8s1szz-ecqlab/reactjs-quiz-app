@@ -5,7 +5,7 @@ const {
 } = require('../data/users');
 
 // Validate and identify the type of identifier (admin token, student ID, or attempt ID)
-const validateIdentifier = (req, res) => {
+const validateIdentifier = async (req, res) => {
   try {
     const { identifier } = req.body;
     
@@ -31,7 +31,7 @@ const validateIdentifier = (req, res) => {
     }
 
     // Check if it's a student ID
-    const student = findUserByStudentId(trimmedIdentifier);
+    const student = await findUserByStudentId(trimmedIdentifier);
     if (student) {
       return res.json({
         success: true,
@@ -46,9 +46,9 @@ const validateIdentifier = (req, res) => {
     }
 
     // Check if it's an attempt ID
-    const attempt = findAttemptById(trimmedIdentifier);
+    const attempt = await findAttemptById(trimmedIdentifier);
     if (attempt) {
-      const attemptStudent = findUserByStudentId(attempt.studentId);
+      const attemptStudent = await findUserByStudentId(attempt.studentId);
       return res.json({
         success: true,
         type: 'attempt',
@@ -81,7 +81,7 @@ const validateIdentifier = (req, res) => {
 };
 
 // Get system information (for landing page)
-const getSystemInfo = (req, res) => {
+const getSystemInfo = async (req, res) => {
   try {
     res.json({
       success: true,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Results.css';
 
-const Results = ({ results, onRestartQuiz }) => {
+const Results = ({ results, onBackToHome, showRetake = true }) => {
   const { 
     score, 
     totalQuestions, 
@@ -97,10 +97,17 @@ const Results = ({ results, onRestartQuiz }) => {
             {showReview ? 'Hide' : 'Review'} Incorrect Answers ({incorrectAnswers.length})
           </button>
           
-          <button className="restart-button" onClick={onRestartQuiz}>
-            <span className="button-icon">🔄</span>
-            Retake ReactJS Quiz
-          </button>
+          {showRetake ? (
+            <button className="restart-button" onClick={onRestartQuiz}>
+              <span className="button-icon">🔄</span>
+              Retake ReactJS Quiz
+            </button>
+          ) : (
+            <button className="logout-button" onClick={onBackToHome}>
+              <span className="button-icon">🏠</span>
+              Back to Home
+            </button>
+          )}
         </div>
 
         {showReview && (

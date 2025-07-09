@@ -50,7 +50,12 @@ const StudentProfile = ({ studentId, onLogout }) => {
 
   const loadAttemptDetails = async (attemptId) => {
     try {
-      const response = await fetch(`/api/student/attempt/${attemptId}/results`);
+      const response = await fetch(`/api/student/attempt/${attemptId}/results`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'student-id': studentId
+        }
+      });
       const data = await response.json();
       
       if (data.success) {
@@ -66,8 +71,20 @@ const StudentProfile = ({ studentId, onLogout }) => {
     }
   };
 
+  const formatTime = (seconds) => {
+    return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
+  };
+
+  const getPerformanceEmoji = (percentage) => {
+    if (percentage >= 90) return '🏆';
+    if (percentage >= 80) return '🎉';
+    if (percentage >= 70) return '👍';
+    if (percentage >= 60) return '👌';
+    return '💪';
   };
 
   const getStatusBadge = (status) => {
@@ -313,81 +330,141 @@ const StudentProfile = ({ studentId, onLogout }) => {
               >
                 ← Back to Attempts
               </button>
-              <h2>Quiz Attempt Details</h2>
+              <h2>Quiz Attempt Results</h2>
             </div>
 
-            <div className="attempt-summary">
-              <div className="summary-card">
-                <h3>Attempt Information</h3>
-                <div className="info-row">
-                  <label>Attempt ID:</label>
-                  <span>{attemptDetails.attempt.attemptId}</span>
+            <div className="results-overview">
+              <div className="results-header">
+                <div className="emoji-display">{getPerformanceEmoji(attemptDetails.results.percentage)}</div>
+                <h1 className="results-title">ReactJS Assessment Complete!</h1>
+                <p className="results-message">{attemptDetails.results.proficiencyLevel?.message || 'Assessment completed'}</p>
+              </div>
+
+              <div className="score-display">
+                <div className="score-circle" style={{ '--grade-color': attemptDetails.results.proficiencyLevel?.color || '#666' }}>
+                  <div className="score-percentage">{attemptDetails.results.percentage}%</div>
+                  <div className="score-grade">{attemptDetails.results.proficiencyLevel?.grade || 'N/A'}</div>
                 </div>
-                <div className="info-row">
-                  <label>Started:</label>
-                  <span>{formatDate(attemptDetails.attempt.startedAt)}</span>
-                </div>
-                <div className="info-row">
-                  <label>Completed:</label>
-                  <span>{formatDate(attemptDetails.attempt.completedAt)}</span>
+                
+                <div className="score-details">
+                  <div className="score-fraction">
+                    <span className="correct-answers">{attemptDetails.results.score}</span>
+                    <span className="separator">/</span>
+                    <span className="total-questions">{attemptDetails.results.totalQuestions}</span>
+                  </div>
+                  <div className="score-label">Correct Answers</div>
                 </div>
               </div>
 
-              <div className="summary-card">
-                <h3>Results</h3>
-                <div className="result-score">
-                  <div className="score-circle">
-                    <span className="score-percentage">
-                      {attemptDetails.results.percentage}%
-                    </span>
-                    <span className="score-fraction">
-                      {attemptDetails.results.score}/{attemptDetails.results.totalQuestions}
-                    </span>
+              <div className="stats-section">
+                <div className="stat-item">
+                  <div className="stat-value">{attemptDetails.results.score}</div>
+                  <div className="stat-label">Correct</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-value">{attemptDetails.results.incorrectAnswers?.length || 0}</div>
+                  <div className="stat-label">Incorrect</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-value">{attemptDetails.results.incorrectAnswers?.filter(q => q.selectedAnswer === null).length || 0}</div>
+                  <div className="stat-label">Skipped</div>
+                </div>
+                <div className="stat-item">
+                  <div className="stat-value">{formatTime(attemptDetails.results.totalTime || 0)}</div>
+                  <div className="stat-label">Time Used</div>
+                </div>
+              </div>
+
+              <div className="attempt-info">
+                <div className="info-card">
+                  <h3>Attempt Information</h3>
+                  <div className="info-row">
+                    <label>Attempt ID:</label>
+                    <span>{attemptDetails.attempt.attemptId}</span>
                   </div>
-                  <div 
-                    className="proficiency-level"
-                    style={{ color: getProficiencyColor(attemptDetails.results.proficiencyLevel) }}
-                  >
-                    {attemptDetails.results.proficiencyLevel}
+                  <div className="info-row">
+                    <label>Started:</label>
+                    <span>{formatDate(attemptDetails.attempt.startedAt)}</span>
+                  </div>
+                  <div className="info-row">
+                    <label>Completed:</label>
+                    <span>{formatDate(attemptDetails.attempt.completedAt)}</span>
+                  </div>
+                  <div className="info-row">
+                    <label>Time Limit:</label>
+                    <span>{formatTime(attemptDetails.attempt.timeLimit)}</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {attemptDetails.results.detailedResults && (
-              <div className="detailed-results">
-                <h3>Question-by-Question Analysis</h3>
-                <div className="results-list">
-                  {attemptDetails.results.detailedResults.map((result, index) => (
-                    <div key={index} className={`result-item ${result.isCorrect ? 'correct' : 'incorrect'}`}>
-                      <div className="question-number">Q{index + 1}</div>
-                      <div className="question-content">
-                        <div className="question-text">{result.question}</div>
-                        <div className="answers">
-                          <div className="answer-row">
-                            <span className="answer-label">Your answer:</span>
-                            <span className={`answer-text ${result.isCorrect ? 'correct' : 'incorrect'}`}>
-                              {result.userAnswer}
-                            </span>
+              {attemptDetails.results.incorrectAnswers && attemptDetails.results.incorrectAnswers.length > 0 && (
+                <div className="review-section">
+                  <h3 className="review-title">Questions You Got Wrong</h3>
+                  <div className="incorrect-answers">
+                    {attemptDetails.results.incorrectAnswers.map((answer, index) => (
+                      <div key={answer.questionId} className="incorrect-answer-item">
+                        <div className="question-header">
+                          <span className="question-number">Q{index + 1}</span>
+                          <span className="answer-status incorrect">
+                            {answer.selectedAnswer === null ? '⏱ Skipped' : '✗ Incorrect'}
+                          </span>
+                        </div>
+                        
+                        <div className="question-content">
+                          <h4 className="question-text">{answer.question}</h4>
+                          
+                          <div className="answer-options">
+                            {answer.options?.map((option, optIndex) => (
+                              <div 
+                                key={optIndex} 
+                                className={`answer-option ${
+                                  optIndex === answer.correctAnswer ? 'correct-answer' : 
+                                  optIndex === answer.selectedAnswer ? 'your-answer' : ''
+                                }`}
+                              >
+                                <span className="option-letter">
+                                  {String.fromCharCode(65 + optIndex)}
+                                </span>
+                                <span className="option-text">{option}</span>
+                                {optIndex === answer.correctAnswer && (
+                                  <span className="correct-label">✓ Correct</span>
+                                )}
+                                {optIndex === answer.selectedAnswer && answer.selectedAnswer !== null && (
+                                  <span className="your-label">Your Answer</span>
+                                )}
+                              </div>
+                            ))}
                           </div>
-                          {!result.isCorrect && (
-                            <div className="answer-row">
-                              <span className="answer-label">Correct answer:</span>
-                              <span className="answer-text correct">
-                                {result.correctAnswer}
-                              </span>
+                          
+                          {answer.explanation && (
+                            <div className="explanation">
+                              <strong>Explanation:</strong> {answer.explanation}
                             </div>
                           )}
                         </div>
                       </div>
-                      <div className="result-icon">
-                        {result.isCorrect ? '✓' : '✗'}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {attemptDetails.results.incorrectAnswers && attemptDetails.results.incorrectAnswers.length === 0 && (
+                <div className="perfect-score">
+                  🎉 Perfect! You got all questions correct!
+                </div>
+              )}
+
+              <div className="motivational-section">
+                <div className="motivational-text">
+                  {attemptDetails.results.percentage >= 80 
+                    ? "Excellent ReactJS knowledge! You're ready for advanced React projects! 🏆" 
+                    : attemptDetails.results.percentage >= 60 
+                      ? "Good ReactJS foundation! Practice with more complex React patterns! ⚛️" 
+                      : "Keep learning ReactJS fundamentals! Check out the official React docs! 📚"
+                  }
                 </div>
               </div>
-            )}
+            </div>
           </div>
         )}
       </main>
