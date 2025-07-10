@@ -25,6 +25,7 @@ module.exports = {
   getAllUsers: DatabaseOperations.getAllUsers,
   updateUser: DatabaseOperations.updateUser,
   deleteUser: DatabaseOperations.deleteUser,
+  hardDeleteUser: DatabaseOperations.hardDeleteUser,
 
   // Quiz attempt operations
   createQuizAttempt: DatabaseOperations.createQuizAttempt,
@@ -32,6 +33,7 @@ module.exports = {
   getAttemptsByStudentId: DatabaseOperations.getAttemptsByStudentId,
   getAllAttempts: DatabaseOperations.getAllAttempts,
   updateAttempt: DatabaseOperations.updateAttempt,
+  deleteAttempt: DatabaseOperations.deleteAttempt,
 
   // Database maintenance
   backup: DatabaseOperations.backup,

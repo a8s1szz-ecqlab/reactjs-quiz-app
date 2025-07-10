@@ -7,6 +7,8 @@ const {
   findUserByStudentId,
   updateUser, 
   deleteUser,
+  hardDeleteUser,
+  deleteAttempt,
   getAttemptsByStudentId 
 } = require('../data/users');
 
@@ -190,6 +192,41 @@ const deleteStudent = async (req, res) => {
   }
 };
 
+// Hard delete student (permanently removes student and all their quiz attempts)
+const hardDeleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const student = await findUserById(parseInt(id));
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found'
+      });
+    }
+
+    const deleted = await hardDeleteUser(parseInt(id));
+    
+    if (deleted) {
+      res.json({
+        success: true,
+        message: 'Student and all associated quiz attempts permanently deleted'
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Error permanently deleting student'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error permanently deleting student',
+      error: error.message
+    });
+  }
+};
+
 // Assign quiz attempt to student
 const assignQuizAttempt = async (req, res) => {
   try {
@@ -283,6 +320,40 @@ const getQuizAttemptsByStudent = async (req, res) => {
   }
 };
 
+// Delete quiz attempt
+const deleteQuizAttempt = async (req, res) => {
+  try {
+    const { attemptId } = req.params;
+    
+    if (!attemptId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Attempt ID is required'
+      });
+    }
+
+    const deleted = await deleteAttempt(attemptId);
+    
+    if (deleted) {
+      res.json({
+        success: true,
+        message: 'Quiz attempt deleted successfully'
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Quiz attempt not found'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting quiz attempt',
+      error: error.message
+    });
+  }
+};
+
 // Get dashboard statistics
 const getDashboardStats = async (req, res) => {
   try {
@@ -320,8 +391,10 @@ module.exports = {
   createStudent,
   updateStudent,
   deleteStudent,
+  hardDeleteStudent,
   assignQuizAttempt,
   getAllQuizAttempts,
   getQuizAttemptsByStudent,
+  deleteQuizAttempt,
   getDashboardStats
 };

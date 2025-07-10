@@ -7,9 +7,11 @@ const {
   createStudent,
   updateStudent,
   deleteStudent,
+  hardDeleteStudent,
   assignQuizAttempt,
   getAllQuizAttempts,
   getQuizAttemptsByStudent,
+  deleteQuizAttempt,
   getDashboardStats
 } = require('../controllers/adminController');
 
@@ -25,10 +27,12 @@ router.get('/students/:id', getStudentById);
 router.post('/students', createStudent);
 router.put('/students/:id', updateStudent);
 router.delete('/students/:id', deleteStudent);
+router.delete('/students/:id/hard', hardDeleteStudent);
 
 // Quiz attempt management routes
 router.get('/quiz-attempts', getAllQuizAttempts);
 router.get('/quiz-attempts/student/:studentId', getQuizAttemptsByStudent);
 router.post('/quiz-attempts/assign', assignQuizAttempt);
+router.delete('/quiz-attempts/:attemptId', deleteQuizAttempt);
 
 module.exports = router;

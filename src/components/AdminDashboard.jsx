@@ -18,6 +18,12 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
     studentId: ''
   });
 
+  // Confirmation dialog state
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [confirmTitle, setConfirmTitle] = useState('');
+  const [confirmMessage, setConfirmMessage] = useState('');
+
   useEffect(() => {
     loadInitialData();
   }, []);
@@ -54,6 +60,21 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
     }
 
     return response.json();
+  };
+
+  const showConfirmation = (title, message, action) => {
+    setConfirmTitle(title);
+    setConfirmMessage(message);
+    setConfirmAction(() => action);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmAction = () => {
+    if (confirmAction) {
+      confirmAction();
+    }
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
   };
 
   const loadDashboardStats = async () => {
@@ -125,19 +146,64 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
   };
 
   const handleDeleteStudent = async (studentId) => {
-    if (!window.confirm('Are you sure you want to delete this student?')) {
-      return;
-    }
+    const performDelete = async () => {
+      try {
+        await apiRequest(`/api/admin/students/${studentId}`, {
+          method: 'DELETE',
+        });
+        await loadStudents();
+        await loadDashboardStats();
+      } catch (error) {
+        setError(error.message);
+      }
+    };
 
-    try {
-      await apiRequest(`/api/admin/students/${studentId}`, {
-        method: 'DELETE',
-      });
-      await loadStudents();
-      await loadDashboardStats();
-    } catch (error) {
-      setError(error.message);
-    }
+    showConfirmation(
+      'Delete Student',
+      'Are you sure you want to delete this student? This will only deactivate their account.',
+      performDelete
+    );
+  };
+
+  const handleHardDeleteStudent = async (studentId) => {
+    const performHardDelete = async () => {
+      try {
+        await apiRequest(`/api/admin/students/${studentId}/hard`, {
+          method: 'DELETE',
+        });
+        await loadStudents();
+        await loadQuizAttempts();
+        await loadDashboardStats();
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    showConfirmation(
+      'Permanently Delete Student',
+      'Are you sure you want to PERMANENTLY delete this student and ALL their quiz attempts? This action cannot be undone!',
+      performHardDelete
+    );
+  };
+
+  const handleDeleteQuizAttempt = async (attemptId) => {
+    const performDeleteAttempt = async () => {
+      try {
+        await apiRequest(`/api/admin/quiz-attempts/${attemptId}`, {
+          method: 'DELETE',
+        });
+        await loadQuizAttempts();
+        await loadDashboardStats();
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    showConfirmation(
+      'Delete Quiz Attempt',
+      'Are you sure you want to delete this quiz attempt?',
+      performDeleteAttempt
+    );
   };
 
   const handleAssignQuiz = async (studentId) => {
@@ -194,24 +260,29 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
       </header>
 
       <nav className="admin-nav">
-        <button
-          className={`nav-button ${activeTab === 'dashboard' ? 'active' : ''}`}
-          onClick={() => setActiveTab('dashboard')}
-        >
-          📊 Dashboard
-        </button>
-        <button
-          className={`nav-button ${activeTab === 'students' ? 'active' : ''}`}
-          onClick={() => setActiveTab('students')}
-        >
-          👨‍🎓 Students
-        </button>
-        <button
-          className={`nav-button ${activeTab === 'attempts' ? 'active' : ''}`}
-          onClick={() => setActiveTab('attempts')}
-        >
-          📝 Quiz Attempts
-        </button>
+        <div className="nav-container">
+          <button
+            className={`nav-button ${activeTab === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+            data-tab="dashboard"
+          >
+            Dashboard
+          </button>
+          <button
+            className={`nav-button ${activeTab === 'students' ? 'active' : ''}`}
+            onClick={() => setActiveTab('students')}
+            data-tab="students"
+          >
+            Students
+          </button>
+          <button
+            className={`nav-button ${activeTab === 'attempts' ? 'active' : ''}`}
+            onClick={() => setActiveTab('attempts')}
+            data-tab="attempts"
+          >
+            Quiz Attempts
+          </button>
+        </div>
       </nav>
 
       <main className="admin-content">
@@ -331,15 +402,23 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
                       <td>{formatDate(student.createdAt)}</td>
                       <td>
                         <div className="action-buttons">
-                          <button onClick={() => handleEditStudent(student)}>Edit</button>
-                          <button onClick={() => handleAssignQuiz(student.studentId)}>
+                          <button onClick={() => handleEditStudent(student)} className="edit-btn">
+                            Edit
+                          </button>
+                          <button onClick={() => handleAssignQuiz(student.studentId)} className="assign-btn">
                             Assign Quiz
                           </button>
                           <button 
                             onClick={() => handleDeleteStudent(student.id)}
-                            className="danger-button"
+                            className="danger-button delete-btn"
                           >
                             Delete
+                          </button>
+                          <button 
+                            onClick={() => handleHardDeleteStudent(student.id)}
+                            className="danger-button delete-btn"
+                          >
+                            Hard Delete
                           </button>
                         </div>
                       </td>
@@ -365,6 +444,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
                     <th>Started</th>
                     <th>Completed</th>
                     <th>Score</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -380,6 +460,11 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
                         {attempt.results?.score !== undefined ? 
                           `${attempt.results.score}/${attempt.results.totalQuestions}` : '-'}
                       </td>
+                      <td>
+                        <button onClick={() => handleDeleteQuizAttempt(attempt.attemptId)} className="danger-button delete-btn">
+                          Delete Attempt
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -388,6 +473,24 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
           </div>
         )}
       </main>
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && (
+        <div className="modal-overlay">
+          <div className="confirmation-dialog">
+            <h3>{confirmTitle}</h3>
+            <p>{confirmMessage}</p>
+            <div className="form-actions">
+              <button type="button" onClick={() => setShowConfirmDialog(false)}>
+                Cancel
+              </button>
+              <button className="danger-button" onClick={handleConfirmAction}>
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

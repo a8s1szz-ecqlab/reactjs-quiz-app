@@ -182,6 +182,27 @@ const DatabaseOperations = {
     return false;
   },
 
+  async hardDeleteUser(id) {
+    await db.read();
+    const userIndex = db.data.users.findIndex(user => user.id === id);
+    if (userIndex !== -1) {
+      // Get the studentId before removing the user
+      const studentId = db.data.users[userIndex].studentId;
+      
+      // Remove the user completely
+      db.data.users.splice(userIndex, 1);
+      
+      // Also remove all quiz attempts for this user
+      if (studentId) {
+        db.data.quizAttempts = db.data.quizAttempts.filter(attempt => attempt.studentId !== studentId);
+      }
+      
+      await db.write();
+      return true;
+    }
+    return false;
+  },
+
   // Quiz attempt operations
   async createQuizAttempt(studentId, assignedBy = 'admin') {
     await db.read();
@@ -196,7 +217,7 @@ const DatabaseOperations = {
       assignedAt: new Date().toISOString(),
       startedAt: null,
       completedAt: null,
-      timeLimit: 1200,
+      timeLimit: 960,
       questions: [],
       answers: [],
       results: null
@@ -231,6 +252,17 @@ const DatabaseOperations = {
       return db.data.quizAttempts[attemptIndex];
     }
     return null;
+  },
+
+  async deleteAttempt(attemptId) {
+    await db.read();
+    const attemptIndex = db.data.quizAttempts.findIndex(attempt => attempt.attemptId === attemptId);
+    if (attemptIndex !== -1) {
+      db.data.quizAttempts.splice(attemptIndex, 1);
+      await db.write();
+      return true;
+    }
+    return false;
   },
 
   // Admin operations
