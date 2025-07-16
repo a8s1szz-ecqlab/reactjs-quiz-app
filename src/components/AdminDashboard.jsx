@@ -179,7 +179,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
 
   const handleAssignQuiz = async (studentId) => {
     try {
-      await QuizApiService.assignQuizAttempt(adminToken, studentId);
+      await QuizApiService.assignQuizAttempt(adminToken, { studentId });
       await loadQuizAttempts();
       await loadDashboardStats();
     } catch (error) {
