@@ -1,6 +1,8 @@
-// API configuration - use proxy in development, direct URL in production
+// API configuration - use proxy in development, backend URL in production
 const isDevelopment = import.meta.env.DEV;
-const API_BASE_URL = isDevelopment ? '/api' : 'http://localhost:3001/api';
+const API_BASE_URL = isDevelopment 
+  ? '/api' 
+  : import.meta.env.VITE_API_URL || 'https://reactjs-quiz-backend.onrender.com/api';
 
 // API service for communicating with the backend
 class QuizApiService {

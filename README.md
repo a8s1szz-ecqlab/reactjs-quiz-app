@@ -1,13 +1,46 @@
 # ReactJS Proficiency Quiz Application
 
-A comprehensive React.js quiz application with **role-based access control** and **persistent file-based database**, designed to assess ReactJS proficiency through interactive quizzes with admin management and student tracking capabilities.
+A comprehensive React.js quiz application wit4. **Access the application**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:3001
 
-![Quiz Application](https://img.shields.io/badge/React-18.2.0-blue) ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple) ![Node.js](https://img.shields.io/badge/Node.js-16+-green) ![Database](https://img.shields.io/badge/Database-LowDB-orange) ![License](https://img.shields.io/badge/license-MIT-green)
+## 🚀 Deployment
+
+### Deploy to Render (Free)
+
+This application is configured for easy deployment to Render's free tier. Follow the detailed guide in [`DEPLOYMENT.md`](./DEPLOYMENT.md).
+
+#### Quick Deployment Steps:
+
+1. **Push your code to GitHub**
+2. **Deploy Backend**:
+   - Create new Web Service on Render
+   - Root Directory: `backend`
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Set environment variables (see DEPLOYMENT.md)
+
+3. **Deploy Frontend**:
+   - Create new Static Site on Render
+   - Build Command: `npm install && npm run build`
+   - Publish Directory: `dist`
+   - Set `VITE_API_URL` to your backend URL
+
+#### Live Demo
+- Frontend: `https://reactjs-quiz-frontend.onrender.com`
+- Backend API: `https://reactjs-quiz-backend.onrender.com/api`
+
+> **Note**: Free tier services may take 30-60 seconds for the first load after being idle.
+
+## 💾 Databaseole-based access control** and **persistent file-based database**, designed to assess ReactJS proficiency through interactive quizzes with admin management and student tracking capabilities.
+
+![Quiz Application](https://img.shields.io/badge/React-18.2.0-blue) ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple) ![Node.js](https://img.shields.io/badge/Node.js-16+-green) ![Database](https://img.shields.io/badge/Database-LowDB-orange) ![License](https://img.shields.io/badge/license-MIT-green) ![Deployment](https://img.shields.io/badge/Deploy-Render-brightgreen)
 
 ## 📋 Table of Contents
 
 - [Features](#-features)
 - [Quick Start](#-quick-start)
+- [Deployment](#-deployment)
 - [Database](#-database)
 - [Access Identifiers](#-access-identifiers)
 - [User Workflows](#-user-workflows)

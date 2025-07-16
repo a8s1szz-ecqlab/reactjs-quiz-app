@@ -262,21 +262,21 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
       <nav className="admin-nav">
         <div className="nav-container">
           <button
-            className={`nav-button ${activeTab === 'dashboard' ? 'active' : ''}`}
+            className={`section ${activeTab === 'dashboard' ? 'active' : ''}`}
             onClick={() => setActiveTab('dashboard')}
             data-tab="dashboard"
           >
             Dashboard
           </button>
           <button
-            className={`nav-button ${activeTab === 'students' ? 'active' : ''}`}
+            className={`section ${activeTab === 'students' ? 'active' : ''}`}
             onClick={() => setActiveTab('students')}
             data-tab="students"
           >
             Students
           </button>
           <button
-            className={`nav-button ${activeTab === 'attempts' ? 'active' : ''}`}
+            className={`section ${activeTab === 'attempts' ? 'active' : ''}`}
             onClick={() => setActiveTab('attempts')}
             data-tab="attempts"
           >

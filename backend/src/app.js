@@ -16,8 +16,25 @@ app.use(helmet({
 }));
 
 // CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000', 
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000'
+];
+
+// Add production URLs from environment variables
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
+// For Render deployment, allow any onrender.com domain in production
+if (process.env.NODE_ENV === 'production') {
+  allowedOrigins.push('https://*.onrender.com');
+}
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000'], // Frontend URLs
+  origin: allowedOrigins,
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -56,8 +73,15 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
     message: 'ReactJS Quiz Backend is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    version: '1.0.0'
   });
+});
+
+// Root endpoint redirect
+app.get('/', (req, res) => {
+  res.redirect('/api/health');
 });
 
 // 404 handler

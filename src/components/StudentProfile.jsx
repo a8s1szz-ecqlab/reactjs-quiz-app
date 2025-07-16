@@ -155,18 +155,20 @@ const StudentProfile = ({ studentId, onLogout }) => {
       </header>
 
       <nav className="student-nav">
-        <button
-          className={`nav-button ${activeView === 'profile' ? 'active' : ''}`}
-          onClick={() => setActiveView('profile')}
-        >
-          📊 Overview
-        </button>
-        <button
-          className={`nav-button ${activeView === 'attempts' ? 'active' : ''}`}
-          onClick={() => setActiveView('attempts')}
-        >
-          📝 Quiz Attempts
-        </button>
+        <div className="nav-container">
+          <button
+            className={`subpage ${activeView === 'profile' ? 'active' : ''}`}
+            onClick={() => setActiveView('profile')}
+          >
+            Overview
+          </button>
+          <button
+            className={`subpage ${activeView === 'attempts' ? 'active' : ''}`}
+            onClick={() => setActiveView('attempts')}
+          >
+            Quiz Attempts
+          </button>
+        </div>
       </nav>
 
       <main className="student-content">
@@ -323,15 +325,6 @@ const StudentProfile = ({ studentId, onLogout }) => {
 
         {activeView === 'attempt-details' && attemptDetails && (
           <div className="attempt-details">
-            <div className="details-header">
-              <button 
-                onClick={() => setActiveView('attempts')}
-                className="back-button"
-              >
-                ← Back to Attempts
-              </button>
-              <h2>Quiz Attempt Results</h2>
-            </div>
 
             <div className="results-overview">
               <div className="results-header">

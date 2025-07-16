@@ -1,9 +1,27 @@
 const { Low } = require('lowdb');
 const { JSONFile } = require('lowdb/node');
 const path = require('path');
+const fs = require('fs');
 
-// Database file path
-const dbPath = path.join(__dirname, 'quiz_database.json');
+// Database file path - use persistent directory for production
+const getDbPath = () => {
+  if (process.env.NODE_ENV === 'production') {
+    // In production, ensure we have a writable directory
+    const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
+    
+    // Create data directory if it doesn't exist
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+    
+    return path.join(dataDir, 'quiz_database.json');
+  }
+  
+  // Development path
+  return path.join(__dirname, 'quiz_database.json');
+};
+
+const dbPath = getDbPath();
 
 // Database adapter
 const adapter = new JSONFile(dbPath);

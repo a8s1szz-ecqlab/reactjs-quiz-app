@@ -95,7 +95,7 @@ const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true }) =>
 
         <div className="action-buttons">
           <button 
-            className={`review-button ${showReview ? 'active' : ''}`} 
+            className={`logout-button ${showReview ? 'active' : ''}`} 
             onClick={() => setShowReview(!showReview)}
           >
             <span className="button-icon">{showReview ? '👁️' : '🔍'}</span>
@@ -174,10 +174,10 @@ const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true }) =>
         <div className="motivational-section">
           <div className="motivational-text">
             {percentage >= 80 
-              ? "Excellent ReactJS knowledge! You're ready for advanced React projects! �" 
+              ? "Excellent ReactJS knowledge! You're ready for advanced React projects!" 
               : percentage >= 60 
-                ? "Good ReactJS foundation! Practice with more complex React patterns! ⚛️" 
-                : "Keep learning ReactJS fundamentals! Check out the official React docs! �"
+                ? "Good ReactJS foundation! Practice with more complex React patterns!" 
+                : "Keep learning ReactJS fundamentals! Check out the official React docs!"
             }
           </div>
         </div>
