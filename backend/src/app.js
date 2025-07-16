@@ -28,13 +28,29 @@ if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
-// For Render deployment, allow any onrender.com domain in production
-if (process.env.NODE_ENV === 'production') {
-  allowedOrigins.push('https://*.onrender.com');
-}
+// Add your specific frontend URL
+allowedOrigins.push('https://reactjs-quiz-n7ep.onrender.com');
+
+// CORS origin function to handle dynamic origins
+const corsOrigin = (origin, callback) => {
+  // Allow requests with no origin (mobile apps, Postman, etc.)
+  if (!origin) return callback(null, true);
+  
+  // Check if origin is in allowed list
+  if (allowedOrigins.includes(origin)) {
+    return callback(null, true);
+  }
+  
+  // Allow any onrender.com subdomain in production
+  if (process.env.NODE_ENV === 'production' && origin.endsWith('.onrender.com')) {
+    return callback(null, true);
+  }
+  
+  callback(new Error('Not allowed by CORS'));
+};
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: corsOrigin,
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
