@@ -15,32 +15,14 @@ const StudentProfile = ({ studentId, onLogout }) => {
     loadStudentProfile();
   }, [studentId]);
 
-  const apiRequest = async (url, options = {}) => {
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'student-id': studentId,
-        ...options.headers,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'API request failed');
-    }
-
-    return response.json();
-  };
-
   const loadStudentProfile = async () => {
     setIsLoading(true);
     try {
-      const profileData = await apiRequest(`/api/student/profile/${studentId}`);
-      setProfile(profileData.data);
+      const profileData = await QuizApiService.getStudentProfile(studentId);
+      setProfile(profileData);
       
-      const attemptsData = await apiRequest(`/api/student/profile/${studentId}/attempts`);
-      setAttempts(attemptsData.data);
+      const attemptsData = await QuizApiService.getStudentAttempts(studentId);
+      setAttempts(attemptsData);
     } catch (error) {
       console.error('Error loading student profile:', error);
       setError(error.message);

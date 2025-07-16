@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import QuizApiService from '../services/api';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ adminToken, onLogout }) => {
@@ -44,24 +45,6 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
     }
   };
 
-  const apiRequest = async (url, options = {}) => {
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': adminToken,
-        ...options.headers,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'API request failed');
-    }
-
-    return response.json();
-  };
-
   const showConfirmation = (title, message, action) => {
     setConfirmTitle(title);
     setConfirmMessage(message);
@@ -79,8 +62,8 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
 
   const loadDashboardStats = async () => {
     try {
-      const data = await apiRequest('/api/admin/dashboard/stats');
-      setDashboardStats(data.data);
+      const data = await QuizApiService.getDashboardStats(adminToken);
+      setDashboardStats(data);
     } catch (error) {
       console.error('Error loading dashboard stats:', error);
     }
@@ -88,8 +71,8 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
 
   const loadStudents = async () => {
     try {
-      const data = await apiRequest('/api/admin/students');
-      setStudents(data.data);
+      const data = await QuizApiService.getStudents(adminToken);
+      setStudents(data);
     } catch (error) {
       console.error('Error loading students:', error);
     }
@@ -97,8 +80,8 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
 
   const loadQuizAttempts = async () => {
     try {
-      const data = await apiRequest('/api/admin/quiz-attempts');
-      setQuizAttempts(data.data);
+      const data = await QuizApiService.getQuizAttempts(adminToken);
+      setQuizAttempts(data);
     } catch (error) {
       console.error('Error loading quiz attempts:', error);
     }
@@ -110,19 +93,13 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
     try {
       if (editingStudent) {
         // Update existing student
-        await apiRequest(`/api/admin/students/${editingStudent.id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            name: studentForm.name,
-            email: studentForm.email
-          }),
+        await QuizApiService.updateStudent(adminToken, editingStudent.id, {
+          name: studentForm.name,
+          email: studentForm.email
         });
       } else {
         // Create new student
-        await apiRequest('/api/admin/students', {
-          method: 'POST',
-          body: JSON.stringify(studentForm),
-        });
+        await QuizApiService.createStudent(adminToken, studentForm);
       }
       
       setShowStudentForm(false);
@@ -148,9 +125,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
   const handleDeleteStudent = async (studentId) => {
     const performDelete = async () => {
       try {
-        await apiRequest(`/api/admin/students/${studentId}`, {
-          method: 'DELETE',
-        });
+        await QuizApiService.deleteStudent(adminToken, studentId);
         await loadStudents();
         await loadDashboardStats();
       } catch (error) {
@@ -168,9 +143,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
   const handleHardDeleteStudent = async (studentId) => {
     const performHardDelete = async () => {
       try {
-        await apiRequest(`/api/admin/students/${studentId}/hard`, {
-          method: 'DELETE',
-        });
+        await QuizApiService.hardDeleteStudent(adminToken, studentId);
         await loadStudents();
         await loadQuizAttempts();
         await loadDashboardStats();
@@ -189,9 +162,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
   const handleDeleteQuizAttempt = async (attemptId) => {
     const performDeleteAttempt = async () => {
       try {
-        await apiRequest(`/api/admin/quiz-attempts/${attemptId}`, {
-          method: 'DELETE',
-        });
+        await QuizApiService.deleteQuizAttempt(adminToken, attemptId);
         await loadQuizAttempts();
         await loadDashboardStats();
       } catch (error) {
@@ -208,10 +179,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
 
   const handleAssignQuiz = async (studentId) => {
     try {
-      await apiRequest('/api/admin/quiz-attempts/assign', {
-        method: 'POST',
-        body: JSON.stringify({ studentId }),
-      });
+      await QuizApiService.assignQuizAttempt(adminToken, studentId);
       await loadQuizAttempts();
       await loadDashboardStats();
     } catch (error) {

@@ -140,6 +140,50 @@ class QuizApiService {
     }
   }
 
+  // Get student profile
+  static async getStudentProfile(studentId) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/student/profile/${studentId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'student-id': studentId
+        }
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to get student profile');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error getting student profile:', error);
+      throw new Error(`Failed to get student profile: ${error.message}`);
+    }
+  }
+
+  // Get student attempts
+  static async getStudentAttempts(studentId) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/student/profile/${studentId}/attempts`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'student-id': studentId
+        }
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to get student attempts');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error getting student attempts:', error);
+      throw new Error(`Failed to get student attempts: ${error.message}`);
+    }
+  }
+
   // Get attempt results for a student
   static async getAttemptResults(attemptId, studentId) {
     try {
@@ -159,6 +203,208 @@ class QuizApiService {
     } catch (error) {
       console.error('Error getting attempt results:', error);
       throw new Error(`Failed to get attempt results: ${error.message}`);
+    }
+  }
+
+  // Admin API methods
+  // Get dashboard stats
+  static async getDashboardStats(adminToken) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/admin/dashboard/stats`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': adminToken
+        }
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to get dashboard stats');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error getting dashboard stats:', error);
+      throw new Error(`Failed to get dashboard stats: ${error.message}`);
+    }
+  }
+
+  // Get all students
+  static async getStudents(adminToken) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/admin/students`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': adminToken
+        }
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to get students');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error getting students:', error);
+      throw new Error(`Failed to get students: ${error.message}`);
+    }
+  }
+
+  // Get quiz attempts
+  static async getQuizAttempts(adminToken) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/admin/quiz-attempts`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': adminToken
+        }
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to get quiz attempts');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error getting quiz attempts:', error);
+      throw new Error(`Failed to get quiz attempts: ${error.message}`);
+    }
+  }
+
+  // Create student
+  static async createStudent(adminToken, studentData) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/admin/students`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': adminToken
+        },
+        body: JSON.stringify(studentData)
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to create student');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error creating student:', error);
+      throw new Error(`Failed to create student: ${error.message}`);
+    }
+  }
+
+  // Update student
+  static async updateStudent(adminToken, studentId, studentData) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/admin/students/${studentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': adminToken
+        },
+        body: JSON.stringify(studentData)
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to update student');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error updating student:', error);
+      throw new Error(`Failed to update student: ${error.message}`);
+    }
+  }
+
+  // Delete student
+  static async deleteStudent(adminToken, studentId) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/admin/students/${studentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': adminToken
+        }
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to delete student');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      throw new Error(`Failed to delete student: ${error.message}`);
+    }
+  }
+
+  // Assign quiz attempt
+  static async assignQuizAttempt(adminToken, assignmentData) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/admin/quiz-attempts/assign`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': adminToken
+        },
+        body: JSON.stringify(assignmentData)
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to assign quiz attempt');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error assigning quiz attempt:', error);
+      throw new Error(`Failed to assign quiz attempt: ${error.message}`);
+    }
+  }
+
+  // Delete student (hard delete)
+  static async hardDeleteStudent(adminToken, studentId) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/admin/students/${studentId}/hard`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': adminToken
+        }
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to hard delete student');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error hard deleting student:', error);
+      throw new Error(`Failed to hard delete student: ${error.message}`);
+    }
+  }
+
+  // Delete quiz attempt
+  static async deleteQuizAttempt(adminToken, attemptId) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/admin/quiz-attempts/${attemptId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': adminToken
+        }
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to delete quiz attempt');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error deleting quiz attempt:', error);
+      throw new Error(`Failed to delete quiz attempt: ${error.message}`);
     }
   }
 
