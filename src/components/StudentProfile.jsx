@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import QuizApiService from '../services/api';
 import './StudentProfile.css';
 
 const StudentProfile = ({ studentId, onLogout }) => {
@@ -50,21 +51,10 @@ const StudentProfile = ({ studentId, onLogout }) => {
 
   const loadAttemptDetails = async (attemptId) => {
     try {
-      const response = await fetch(`/api/student/attempt/${attemptId}/results`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'student-id': studentId
-        }
-      });
-      const data = await response.json();
-      
-      if (data.success) {
-        setAttemptDetails(data.data);
-        setSelectedAttempt(attemptId);
-        setActiveView('attempt-details');
-      } else {
-        setError(data.message);
-      }
+      const data = await QuizApiService.getAttemptResults(attemptId, studentId);
+      setAttemptDetails(data);
+      setSelectedAttempt(attemptId);
+      setActiveView('attempt-details');
     } catch (error) {
       console.error('Error loading attempt details:', error);
       setError('Failed to load attempt details');

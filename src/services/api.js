@@ -140,6 +140,28 @@ class QuizApiService {
     }
   }
 
+  // Get attempt results for a student
+  static async getAttemptResults(attemptId, studentId) {
+    try {
+      const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/student/attempt/${attemptId}/results`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'student-id': studentId
+        }
+      });
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to get attempt results');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Error getting attempt results:', error);
+      throw new Error(`Failed to get attempt results: ${error.message}`);
+    }
+  }
+
   // Health check
   static async healthCheck() {
     try {

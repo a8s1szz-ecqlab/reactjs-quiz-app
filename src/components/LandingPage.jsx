@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import QuizApiService from '../services/api';
 import './LandingPage.css';
 
 const LandingPage = ({ onIdentifierSubmit }) => {
@@ -18,15 +19,7 @@ const LandingPage = ({ onIdentifierSubmit }) => {
     setError('');
 
     try {
-      const response = await fetch('/api/auth/validate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ identifier: identifier.trim() }),
-      });
-
-      const data = await response.json();
+      const data = await QuizApiService.validateIdentifier(identifier.trim());
 
       if (data.success) {
         onIdentifierSubmit(data.type, data.data);
