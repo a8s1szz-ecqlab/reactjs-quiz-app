@@ -74,9 +74,18 @@ const createSampleData = async () => {
     },
     {
       id: 3,
-      studentId: "STUD0003",
-      name: "Mike Johnson",
-      email: "mike.johnson@example.com",
+      studentId: "RJSPE01819332",
+      name: "Jan Erisse Garcia",
+      email: "AAYVVZZ@mmm.com",
+      role: "student",
+      createdAt: new Date().toISOString(),
+      isActive: true
+    },
+    {
+      id: 4,
+      studentId: "RJSPE02029879",
+      name: "Rashmi Kokkalaki",
+      email: "ACKX3ZZ@mmm.com",
       role: "student",
       createdAt: new Date().toISOString(),
       isActive: true
@@ -115,14 +124,28 @@ const createSampleData = async () => {
     },
     {
       id: 3,
-      attemptId: "ATT000003",
-      studentId: "STUD0003",
+      attemptId: "ATT1079003",
+      studentId: "RJSPE01819332",
       assignedBy: "admin",
       status: "assigned",
       assignedAt: new Date().toISOString(),
       startedAt: null,
       completedAt: null,
-      timeLimit: 1200,
+      timeLimit: 960,
+      questions: [],
+      answers: [],
+      results: null
+    },
+    {
+      id: 4,
+      attemptId: "ATT1079004",
+      studentId: "RJSPE02029879",
+      assignedBy: "admin",
+      status: "assigned",
+      assignedAt: new Date().toISOString(),
+      startedAt: null,
+      completedAt: null,
+      timeLimit: 960,
       questions: [],
       answers: [],
       results: null
@@ -131,8 +154,8 @@ const createSampleData = async () => {
 
   db.data.users = sampleUsers;
   db.data.quizAttempts = sampleAttempts;
-  db.data.metadata.nextUserId = 4;
-  db.data.metadata.nextAttemptId = 4;
+  db.data.metadata.nextUserId = 5;
+  db.data.metadata.nextAttemptId = 5;
 };
 
 // Database operations

@@ -11,10 +11,6 @@ const getApiBaseUrl = () => {
   const envApiUrl = import.meta.env.VITE_API_URL;
   const defaultApiUrl = 'https://reactjs-quiz-backend.onrender.com/api';
   
-  // Log for debugging
-  console.log('Environment API URL:', envApiUrl);
-  console.log('Default API URL:', defaultApiUrl);
-  
   return envApiUrl || defaultApiUrl;
 };
 
