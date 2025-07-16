@@ -96,7 +96,7 @@ const createSampleData = async () => {
   const sampleAttempts = [
     {
       id: 1,
-      attemptId: "ATT000001",
+      attemptId: "ATT1079001",
       studentId: "STUD0001",
       assignedBy: "admin",
       status: "assigned",
@@ -110,7 +110,7 @@ const createSampleData = async () => {
     },
     {
       id: 2,
-      attemptId: "ATT000002",
+      attemptId: "ATT1079002",
       studentId: "STUD0002",
       assignedBy: "admin",
       status: "assigned",
@@ -251,7 +251,7 @@ const DatabaseOperations = {
     
     const attempt = {
       id,
-      attemptId: `ATT${String(id).padStart(6, '0')}`,
+      attemptId: `ATT1079${String(id).padStart(3, '0')}`,
       studentId,
       assignedBy,
       status: 'assigned',

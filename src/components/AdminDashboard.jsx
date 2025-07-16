@@ -25,6 +25,12 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
   const [confirmTitle, setConfirmTitle] = useState('');
   const [confirmMessage, setConfirmMessage] = useState('');
 
+  // Sorting state for quiz attempts table
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'asc'
+  });
+
   useEffect(() => {
     loadInitialData();
   }, []);
@@ -185,6 +191,81 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
     } catch (error) {
       setError(error.message);
     }
+  };
+
+  // Sorting functionality for quiz attempts
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    } else if (sortConfig.key === key && sortConfig.direction === 'desc') {
+      // Third click resets sorting
+      setSortConfig({ key: null, direction: 'asc' });
+      return;
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const clearSort = () => {
+    setSortConfig({ key: null, direction: 'asc' });
+  };
+
+  const getSortedAttempts = () => {
+    if (!sortConfig.key) return quizAttempts;
+
+    return [...quizAttempts].sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortConfig.key) {
+        case 'attemptId':
+          aValue = a.attemptId;
+          bValue = b.attemptId;
+          break;
+        case 'studentName':
+          aValue = a.studentName;
+          bValue = b.studentName;
+          break;
+        case 'status':
+          aValue = a.status;
+          bValue = b.status;
+          break;
+        case 'assignedAt':
+          aValue = new Date(a.assignedAt);
+          bValue = new Date(b.assignedAt);
+          break;
+        case 'startedAt':
+          aValue = a.startedAt ? new Date(a.startedAt) : new Date(0);
+          bValue = b.startedAt ? new Date(b.startedAt) : new Date(0);
+          break;
+        case 'completedAt':
+          aValue = a.completedAt ? new Date(a.completedAt) : new Date(0);
+          bValue = b.completedAt ? new Date(b.completedAt) : new Date(0);
+          break;
+        case 'score':
+          aValue = a.results?.score ?? -1;
+          bValue = b.results?.score ?? -1;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
+  const getSortIcon = (columnKey) => {
+    if (sortConfig.key !== columnKey) {
+      return <span className="sort-icon neutral">⇅</span>; // Default unsorted icon
+    }
+    return sortConfig.direction === 'asc' ? 
+      <span className="sort-icon asc">↑</span> : 
+      <span className="sort-icon desc">↓</span>;
   };
 
   const formatDate = (dateString) => {
@@ -400,23 +481,79 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
 
         {activeTab === 'attempts' && (
           <div className="attempts-tab">
-            <h2>Quiz Attempts</h2>
+            <div className="tab-header">
+              <h2>Quiz Attempts</h2>
+              {sortConfig.key && (
+                <button onClick={clearSort} className="secondary-button">
+                  Clear Sort
+                </button>
+              )}
+            </div>
             <div className="attempts-table">
               <table>
                 <thead>
                   <tr>
-                    <th>Attempt ID</th>
-                    <th>Student</th>
-                    <th>Status</th>
-                    <th>Assigned</th>
-                    <th>Started</th>
-                    <th>Completed</th>
-                    <th>Score</th>
+                    <th 
+                      className="sortable-header" 
+                      onClick={() => handleSort('attemptId')}
+                      title="Click to sort by Attempt ID"
+                    >
+                      <span className="header-text">Attempt ID</span>
+                      {getSortIcon('attemptId')}
+                    </th>
+                    <th 
+                      className="sortable-header" 
+                      onClick={() => handleSort('studentName')}
+                      title="Click to sort by Student Name"
+                    >
+                      <span className="header-text">Student</span>
+                      {getSortIcon('studentName')}
+                    </th>
+                    <th 
+                      className="sortable-header" 
+                      onClick={() => handleSort('status')}
+                      title="Click to sort by Status"
+                    >
+                      <span className="header-text">Status</span>
+                      {getSortIcon('status')}
+                    </th>
+                    <th 
+                      className="sortable-header" 
+                      onClick={() => handleSort('assignedAt')}
+                      title="Click to sort by Assigned Date"
+                    >
+                      <span className="header-text">Assigned</span>
+                      {getSortIcon('assignedAt')}
+                    </th>
+                    <th 
+                      className="sortable-header" 
+                      onClick={() => handleSort('startedAt')}
+                      title="Click to sort by Started Date"
+                    >
+                      <span className="header-text">Started</span>
+                      {getSortIcon('startedAt')}
+                    </th>
+                    <th 
+                      className="sortable-header" 
+                      onClick={() => handleSort('completedAt')}
+                      title="Click to sort by Completed Date"
+                    >
+                      <span className="header-text">Completed</span>
+                      {getSortIcon('completedAt')}
+                    </th>
+                    <th 
+                      className="sortable-header" 
+                      onClick={() => handleSort('score')}
+                      title="Click to sort by Score"
+                    >
+                      <span className="header-text">Score</span>
+                      {getSortIcon('score')}
+                    </th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {quizAttempts.map((attempt) => (
+                  {getSortedAttempts().map((attempt) => (
                     <tr key={attempt.id}>
                       <td>{attempt.attemptId}</td>
                       <td>{attempt.studentName}</td>

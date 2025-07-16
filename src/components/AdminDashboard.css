@@ -206,17 +206,44 @@
 .attempts-table table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed; /* Force table to maintain fixed layout */
+}
+
+.attempts-table {
+  overflow-x: auto; /* Allow horizontal scrolling if needed */
+  min-width: 100%;
+}
+
+.attempts-table thead tr {
+  display: table-row; /* Ensure header row displays as a single row */
+  white-space: nowrap; /* Prevent any wrapping */
+}
+
+.attempts-table thead {
+  display: table-header-group; /* Ensure proper table header group display */
+}
+
+/* Force all header cells to stay inline */
+.attempts-table thead th {
+  display: table-cell;
+  vertical-align: middle;
 }
 
 .students-table th,
 .attempts-table th,
 .students-table td,
 .attempts-table td {
-  padding: var(--space-3) var(--space-4);
   text-align: left;
   border-bottom: 1px solid var(--border);
   font-size: var(--font-size-sm);
   line-height: 1.4;
+  overflow: hidden; /* Prevent content overflow */
+  text-overflow: ellipsis; /* Add ellipsis for long content */
+}
+
+.students-table td,
+.attempts-table td {
+  padding: var(--space-3) var(--space-4);
 }
 
 .students-table th,
@@ -228,7 +255,125 @@
   letter-spacing: 0.05em;
   color: var(--text-secondary);
   white-space: nowrap;
+  padding: 0; /* Reset padding for sortable headers */
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  vertical-align: middle;
 }
+
+/* Non-sortable headers get normal padding */
+.students-table th:not(.sortable-header),
+.attempts-table th:not(.sortable-header) {
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Sortable Header Styles */
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  min-height: 44px;
+  max-height: 44px; /* Prevent height expansion */
+  padding: var(--space-3) var(--space-4);
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: var(--radius) var(--radius) 0 0;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflow content */
+}
+
+.sortable-header:hover {
+  background-color: var(--border);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sortable-header:active {
+  background-color: var(--accent-light);
+  transform: translateY(0);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Header text wrapper */
+.sortable-header .header-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0; /* Allow flex item to shrink */
+}
+
+.sort-icon {
+  font-size: 0.9em;
+  font-weight: bold;
+  opacity: 0.5;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  border-radius: 2px;
+}
+
+.sort-icon.neutral {
+  opacity: 0.3;
+  color: var(--text-secondary);
+}
+
+.sort-icon.asc {
+  opacity: 0.9;
+  color: var(--accent);
+  transform: scale(1.1);
+  background-color: rgba(var(--accent-rgb), 0.1);
+}
+
+.sort-icon.desc {
+  opacity: 0.9;
+  color: var(--accent);
+  transform: scale(1.1);
+  background-color: rgba(var(--accent-rgb), 0.1);
+}
+
+.sortable-header:hover .sort-icon {
+  opacity: 1;
+}
+
+.sortable-header:hover .sort-icon.neutral {
+  opacity: 0.6;
+}
+
+/* Specific column widths for quiz attempts table */
+.attempts-table th:nth-child(1) { width: 12%; } /* Attempt ID */
+.attempts-table th:nth-child(2) { width: 15%; } /* Student */
+.attempts-table th:nth-child(3) { width: 10%; } /* Status */
+.attempts-table th:nth-child(4) { width: 15%; } /* Assigned */
+.attempts-table th:nth-child(5) { width: 15%; } /* Started */
+.attempts-table th:nth-child(6) { width: 15%; } /* Completed */
+.attempts-table th:nth-child(7) { width: 8%; }  /* Score */
+.attempts-table th:nth-child(8) { width: 10%; } /* Actions */
+
+.attempts-table td:nth-child(1) { width: 12%; }
+.attempts-table td:nth-child(2) { width: 15%; }
+.attempts-table td:nth-child(3) { width: 10%; }
+.attempts-table td:nth-child(4) { width: 15%; }
+.attempts-table td:nth-child(5) { width: 15%; }
+.attempts-table td:nth-child(6) { width: 15%; }
+.attempts-table td:nth-child(7) { width: 8%; }
+.attempts-table td:nth-child(8) { width: 10%; }
 
 .students-table tbody tr:hover,
 .attempts-table tbody tr:hover {
@@ -522,6 +667,28 @@
   box-shadow: var(--shadow-md);
 }
 
+.secondary-button {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 32px;
+}
+
+.secondary-button:hover {
+  background: var(--border-light);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
 .assign-button {
   background: var(--success);
   color: white;
@@ -676,7 +843,24 @@
   
   .students-table table,
   .attempts-table table {
-    min-width: 600px;
+    min-width: 800px; /* Increased minimum width for attempts table */
+  }
+
+  /* Force single row for quiz attempts headers on mobile */
+  .attempts-table thead tr {
+    display: table-row !important;
+    white-space: nowrap;
+  }
+
+  .attempts-table .sortable-header {
+    min-width: fit-content;
+    max-height: 44px;
+    overflow: hidden;
+  }
+
+  .attempts-table .sortable-header .header-text {
+    font-size: 10px; /* Smaller font on mobile */
+    letter-spacing: 0.03em;
   }
   
   .modal-content {
