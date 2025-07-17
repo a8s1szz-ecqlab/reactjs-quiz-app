@@ -96,16 +96,29 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
   const handleStudentSubmit = async (e) => {
     e.preventDefault();
     
+    // Trim and validate form inputs
+    const trimmedName = studentForm.name?.trim() || '';
+    const trimmedEmail = studentForm.email?.trim() || '';
+    
+    if (!trimmedName || !trimmedEmail) {
+      setError('Both name and email are required');
+      return;
+    }
+    
     try {
       if (editingStudent) {
         // Update existing student
         await QuizApiService.updateStudent(adminToken, editingStudent.id, {
-          name: studentForm.name,
-          email: studentForm.email
+          name: trimmedName,
+          email: trimmedEmail
         });
       } else {
         // Create new student
-        await QuizApiService.createStudent(adminToken, studentForm);
+        await QuizApiService.createStudent(adminToken, {
+          ...studentForm,
+          name: trimmedName,
+          email: trimmedEmail
+        });
       }
       
       setShowStudentForm(false);
@@ -125,6 +138,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
       email: student.email,
       studentId: student.studentId
     });
+    setError(''); // Clear any existing errors
     setShowStudentForm(true);
   };
 
@@ -377,6 +391,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
                   setShowStudentForm(true);
                   setEditingStudent(null);
                   setStudentForm({ name: '', email: '', studentId: '' });
+                  setError(''); // Clear any existing errors
                 }}
                 className="primary-button"
               >

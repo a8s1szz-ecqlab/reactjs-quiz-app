@@ -117,6 +117,14 @@ const updateStudent = async (req, res) => {
     const { id } = req.params;
     const { name, email } = req.body;
     
+    // Validate input
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid student ID'
+      });
+    }
+    
     const student = await findUserById(parseInt(id));
     if (!student) {
       return res.status(404).json({
@@ -124,10 +132,19 @@ const updateStudent = async (req, res) => {
         message: 'Student not found'
       });
     }
+    
+    // Validate that at least one field is provided
+    if ((!name || name.trim() === '') && (!email || email.trim() === '')) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one field (name or email) must be provided'
+      });
+    }
 
     // Check if email already exists (exclude current student)
-    if (email && email !== student.email) {
-      const existingUser = users.find(user => user.email === email && user.id !== parseInt(id) && user.isActive);
+    if (email && email.trim() !== '' && email.trim() !== student.email) {
+      const allUsers = await getAllUsers();
+      const existingUser = allUsers.find(user => user.email === email.trim() && user.id !== parseInt(id) && user.isActive);
       if (existingUser) {
         return res.status(409).json({
           success: false,
@@ -137,8 +154,12 @@ const updateStudent = async (req, res) => {
     }
 
     const updates = {};
-    if (name) updates.name = name;
-    if (email) updates.email = email;
+    if (name !== undefined && name !== null && name.trim() !== '') {
+      updates.name = name.trim();
+    }
+    if (email !== undefined && email !== null && email.trim() !== '') {
+      updates.email = email.trim();
+    }
     updates.updatedAt = new Date().toISOString();
 
     const updatedStudent = await updateUser(parseInt(id), updates);
