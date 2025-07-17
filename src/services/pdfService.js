@@ -2,12 +2,12 @@ import jsPDF from 'jspdf';
 
 class PDFService {
   /**
-   * Generate a PDF report for quiz results
-   * @param {Object} resultData - The quiz result data
+   * Generate a PDF report for exam results
+   * @param {Object} resultData - The exam result data
    * @param {Object} studentInfo - Student information (optional)
    * @returns {Promise<void>} - Downloads the PDF
    */
-  static async generateQuizResultsPDF(resultData, studentInfo = null) {
+  static async generateExamResultsPDF(resultData, studentInfo = null) {
     const {
       score,
       totalQuestions,
@@ -53,7 +53,7 @@ class PDFService {
     // Header
     pdf.setFontSize(20);
     pdf.setTextColor(...primaryColor);
-    pdf.text('ReactJS Quiz Results', margin, yPosition);
+    pdf.text('ReactJS Exam Results', margin, yPosition);
     yPosition += 15;
 
     // Subtitle with date
@@ -113,7 +113,7 @@ class PDFService {
     checkPageBreak(60);
     pdf.setFontSize(14);
     pdf.setTextColor(...primaryColor);
-    pdf.text('Quiz Statistics', margin, yPosition);
+    pdf.text('Exam Statistics', margin, yPosition);
     yPosition += lineHeight + 2;
 
     pdf.setFontSize(10);
@@ -254,15 +254,15 @@ class PDFService {
     // Generate filename
     const timestamp = new Date().toISOString().split('T')[0];
     const studentPrefix = studentInfo?.studentId || 'student';
-    const filename = `ReactJS_Quiz_Results_${studentPrefix}_${timestamp}.pdf`;
+    const filename = `ReactJS_Exam_Results_${studentPrefix}_${timestamp}.pdf`;
 
     // Download the PDF
     pdf.save(filename);
   }
 
   /**
-   * Generate a summary PDF for multiple quiz attempts
-   * @param {Array} attempts - Array of quiz attempts
+   * Generate a summary PDF for multiple exam attempts
+   * @param {Array} attempts - Array of exam attempts
    * @param {Object} studentInfo - Student information
    */
   static async generateStudentSummaryPDF(attempts, studentInfo) {
@@ -277,7 +277,7 @@ class PDFService {
     // Header
     pdf.setFontSize(20);
     pdf.setTextColor(...primaryColor);
-    pdf.text('ReactJS Quiz Performance Summary', margin, yPosition);
+    pdf.text('ReactJS Exam Performance Summary', margin, yPosition);
     yPosition += 20;
 
     // Student info
@@ -300,7 +300,7 @@ class PDFService {
     if (completedAttempts.length > 0) {
       pdf.setFontSize(14);
       pdf.setTextColor(...primaryColor);
-      pdf.text('Quiz Attempts History', margin, yPosition);
+      pdf.text('Exam Attempts History', margin, yPosition);
       yPosition += 15;
 
       completedAttempts.forEach((attempt, index) => {
@@ -323,7 +323,7 @@ class PDFService {
       });
     }
 
-    const filename = `ReactJS_Quiz_Summary_${studentInfo.studentId}_${new Date().toISOString().split('T')[0]}.pdf`;
+    const filename = `ReactJS_Exam_Summary_${studentInfo.studentId}_${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(filename);
   }
 }

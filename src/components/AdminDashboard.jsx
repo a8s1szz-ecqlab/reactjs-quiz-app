@@ -5,7 +5,7 @@ import './AdminDashboard.css';
 const AdminDashboard = ({ adminToken, onLogout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [students, setStudents] = useState([]);
-  const [quizAttempts, setQuizAttempts] = useState([]);
+  const [examAttempts, setExamAttempts] = useState([]);
   const [dashboardStats, setDashboardStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,7 +25,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
   const [confirmTitle, setConfirmTitle] = useState('');
   const [confirmMessage, setConfirmMessage] = useState('');
 
-  // Sorting state for quiz attempts table
+  // Sorting state for exam attempts table
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: 'asc'
@@ -41,7 +41,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
       await Promise.all([
         loadDashboardStats(),
         loadStudents(),
-        loadQuizAttempts()
+        loadExamAttempts()
       ]);
     } catch (error) {
       console.error('Error loading initial data:', error);
@@ -84,12 +84,12 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
     }
   };
 
-  const loadQuizAttempts = async () => {
+  const loadExamAttempts = async () => {
     try {
       const data = await QuizApiService.getQuizAttempts(adminToken);
-      setQuizAttempts(data);
+      setExamAttempts(data);
     } catch (error) {
-      console.error('Error loading quiz attempts:', error);
+      console.error('Error loading exam attempts:', error);
     }
   };
 
@@ -151,7 +151,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
       try {
         await QuizApiService.hardDeleteStudent(adminToken, studentId);
         await loadStudents();
-        await loadQuizAttempts();
+        await loadExamAttempts();
         await loadDashboardStats();
       } catch (error) {
         setError(error.message);
@@ -160,16 +160,16 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
 
     showConfirmation(
       'Permanently Delete Student',
-      'Are you sure you want to PERMANENTLY delete this student and ALL their quiz attempts? This action cannot be undone!',
+      'Are you sure you want to PERMANENTLY delete this student and ALL their exam attempts? This action cannot be undone!',
       performHardDelete
     );
   };
 
-  const handleDeleteQuizAttempt = async (attemptId) => {
+  const handleDeleteExamAttempt = async (attemptId) => {
     const performDeleteAttempt = async () => {
       try {
         await QuizApiService.deleteQuizAttempt(adminToken, attemptId);
-        await loadQuizAttempts();
+        await loadExamAttempts();
         await loadDashboardStats();
       } catch (error) {
         setError(error.message);
@@ -177,23 +177,23 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
     };
 
     showConfirmation(
-      'Delete Quiz Attempt',
-      'Are you sure you want to delete this quiz attempt?',
+      'Delete Exam Attempt',
+      'Are you sure you want to delete this exam attempt?',
       performDeleteAttempt
     );
   };
 
-  const handleAssignQuiz = async (studentId) => {
+  const handleAssignExam = async (studentId) => {
     try {
       await QuizApiService.assignQuizAttempt(adminToken, { studentId });
-      await loadQuizAttempts();
+      await loadExamAttempts();
       await loadDashboardStats();
     } catch (error) {
       setError(error.message);
     }
   };
 
-  // Sorting functionality for quiz attempts
+  // Sorting functionality for exam attempts
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -211,9 +211,9 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
   };
 
   const getSortedAttempts = () => {
-    if (!sortConfig.key) return quizAttempts;
+    if (!sortConfig.key) return examAttempts;
 
-    return [...quizAttempts].sort((a, b) => {
+    return [...examAttempts].sort((a, b) => {
       let aValue, bValue;
 
       switch (sortConfig.key) {
@@ -329,7 +329,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
             onClick={() => setActiveTab('attempts')}
             data-tab="attempts"
           >
-            Quiz Attempts
+            Exam Attempts
           </button>
         </div>
       </nav>
@@ -454,8 +454,8 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
                           <button onClick={() => handleEditStudent(student)} className="edit-btn">
                             Edit
                           </button>
-                          <button onClick={() => handleAssignQuiz(student.studentId)} className="assign-btn">
-                            Assign Quiz
+                          <button onClick={() => handleAssignExam(student.studentId)} className="assign-btn">
+                            Assign Exam
                           </button>
                           <button 
                             onClick={() => handleDeleteStudent(student.id)}
@@ -482,7 +482,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
         {activeTab === 'attempts' && (
           <div className="attempts-tab">
             <div className="tab-header">
-              <h2>Quiz Attempts</h2>
+              <h2>Exam Attempts</h2>
               {sortConfig.key && (
                 <button onClick={clearSort} className="secondary-button">
                   Clear Sort
@@ -566,7 +566,7 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
                           `${attempt.results.score}/${attempt.results.totalQuestions}` : '-'}
                       </td>
                       <td>
-                        <button onClick={() => handleDeleteQuizAttempt(attempt.attemptId)} className="danger-button delete-btn">
+                        <button onClick={() => handleDeleteExamAttempt(attempt.attemptId)} className="danger-button delete-btn">
                           Delete Attempt
                         </button>
                       </td>

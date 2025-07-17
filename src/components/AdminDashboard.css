@@ -356,7 +356,7 @@
   opacity: 0.6;
 }
 
-/* Specific column widths for quiz attempts table */
+/* Specific column widths for exam attempts table */
 .attempts-table th:nth-child(1) { width: 12%; } /* Attempt ID */
 .attempts-table th:nth-child(2) { width: 15%; } /* Student */
 .attempts-table th:nth-child(3) { width: 10%; } /* Status */
@@ -846,7 +846,7 @@
     min-width: 800px; /* Increased minimum width for attempts table */
   }
 
-  /* Force single row for quiz attempts headers on mobile */
+  /* Force single row for exam attempts headers on mobile */
   .attempts-table thead tr {
     display: table-row !important;
     white-space: nowrap;

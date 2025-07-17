@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import QuizApiService from '../services/api';
-import './Quiz.css';
+import './Exam.css';
 
 const Exam = ({ attemptId, questions, timeLimit, onExamComplete }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -109,8 +109,8 @@ const Exam = ({ attemptId, questions, timeLimit, onExamComplete }) => {
   };
 
   return (
-    <div className="quiz-container">
-      <div className="quiz-header">
+    <div className="exam-container">
+      <div className="exam-header">
         <div className="progress-section">
           <div className="progress-bar">
             <div 

@@ -1,11 +1,11 @@
-/* Minimalist Quiz Interface */
-.quiz-container {
+/* Minimalist Exam Interface */
+.exam-container {
   min-height: 100vh;
   background-color: var(--background);
   padding: var(--space-4);
 }
 
-.quiz-header {
+.exam-header {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -357,7 +357,7 @@
   outline-offset: 2px;
 }
 
-.quiz-navigation {
+.exam-navigation {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -373,14 +373,14 @@
   gap: var(--space-3);
 }
 
-.quiz-stats {
+.exam-stats {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
   text-align: center;
 }
 
 /* Loading and Error States */
-.quiz-loading {
+.exam-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -389,7 +389,7 @@
   gap: var(--space-4);
 }
 
-.quiz-loading .loading-spinner {
+.exam-loading .loading-spinner {
   width: 2rem;
   height: 2rem;
   border: 3px solid var(--border);
@@ -398,7 +398,7 @@
   animation: spin 1s linear infinite;
 }
 
-.quiz-error {
+.exam-error {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -409,14 +409,14 @@
   margin: 0 auto;
 }
 
-.quiz-error h2 {
+.exam-error h2 {
   margin: 0 0 var(--space-4) 0;
   color: var(--error);
   font-size: var(--font-size-xl);
   font-weight: 600;
 }
 
-.quiz-error p {
+.exam-error p {
   margin: 0 0 var(--space-6) 0;
   color: var(--text-secondary);
   line-height: 1.5;
@@ -424,11 +424,11 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .quiz-container {
+  .exam-container {
     padding: var(--space-3);
   }
   
-  .quiz-header {
+  .exam-header {
     padding: var(--space-4);
     gap: var(--space-4);
   }
@@ -439,7 +439,7 @@
 }
 
 @media (max-width: 768px) {
-  .quiz-header {
+  .exam-header {
     grid-template-columns: 1fr;
     gap: var(--space-4);
     text-align: center;
@@ -497,11 +497,11 @@
 }
 
 @media (max-width: 640px) {
-  .quiz-container {
+  .exam-container {
     padding: var(--space-2);
   }
   
-  .quiz-header {
+  .exam-header {
     padding: var(--space-3);
   }
   

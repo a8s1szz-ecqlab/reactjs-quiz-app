@@ -108,7 +108,7 @@ const StudentProfile = ({ studentId, onLogout }) => {
         studentId: profile.student.studentId
       };
       
-      await PDFService.generateQuizResultsPDF(resultData, studentInfo);
+      await PDFService.generateExamResultsPDF(resultData, studentInfo);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to generate PDF. Please try again.');
@@ -188,7 +188,7 @@ const StudentProfile = ({ studentId, onLogout }) => {
             className={`subpage ${activeView === 'attempts' ? 'active' : ''}`}
             onClick={() => setActiveView('attempts')}
           >
-            Quiz Attempts
+            Exam Attempts
           </button>
         </div>
       </nav>
@@ -256,7 +256,7 @@ const StudentProfile = ({ studentId, onLogout }) => {
 
             {profile.recentAttempts && profile.recentAttempts.length > 0 && (
               <div className="recent-attempts">
-                <h3>Recent Quiz Attempts</h3>
+                <h3>Recent Exam Attempts</h3>
                 <div className="attempts-list">
                   {profile.recentAttempts.slice(0, 3).map((attempt) => (
                     <div key={attempt.id} className="attempt-card">
@@ -294,7 +294,7 @@ const StudentProfile = ({ studentId, onLogout }) => {
         {activeView === 'attempts' && (
           <div className="attempts-view">
             <div className="attempts-header">
-              <h2>All Quiz Attempts</h2>
+              <h2>All Exam Attempts</h2>
               {attempts.filter(a => a.status === 'completed').length > 0 && (
                 <button 
                   onClick={handleDownloadSummaryPDF}
@@ -351,9 +351,9 @@ const StudentProfile = ({ studentId, onLogout }) => {
                         {attempt.status === 'assigned' && (
                           <a 
                             href={`/?id=${attempt.attemptId}`}
-                            className="action-button take-quiz"
+                            className="action-button take-exam"
                           >
-                            Take Quiz
+                            Take Exam
                           </a>
                         )}
                       </td>

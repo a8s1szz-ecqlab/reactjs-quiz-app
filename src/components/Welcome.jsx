@@ -1,18 +1,18 @@
 import './Welcome.css';
 
-const Welcome = ({ onStartQuiz, totalQuestions, loading, error }) => {
+const Welcome = ({ onStartExam, totalQuestions, loading, error }) => {
   return (
     <div className="welcome-container">
       <div className="welcome-card">
         <div className="welcome-header">
           <div className="logo-section">
-            <div className="quiz-icon">⚛️</div>
-            <h1 className="app-title">ReactJS Proficiency Quiz</h1>
+            <div className="exam-icon">⚛️</div>
+            <h1 className="app-title">ReactJS Proficiency Exam</h1>
           </div>
           <p className="welcome-subtitle">Test your ReactJS knowledge and assess your proficiency level!</p>
         </div>
 
-        <div className="quiz-info">
+        <div className="exam-info">
           <div className="info-grid">
             <div className="info-item">
               <div className="info-icon">⚛️</div>
@@ -26,7 +26,7 @@ const Welcome = ({ onStartQuiz, totalQuestions, loading, error }) => {
               <div className="info-icon">⏰</div>
               <div className="info-content">
                 <h3>20 Minutes</h3>
-                <p>Total time limit for the entire quiz with free navigation</p>
+                <p>Total time limit for the entire exam with free navigation</p>
               </div>
             </div>
             
@@ -48,7 +48,7 @@ const Welcome = ({ onStartQuiz, totalQuestions, loading, error }) => {
           </div>
         </div>
 
-        <div className="quiz-preview">
+        <div className="exam-preview">
           <h3 className="preview-title">What You'll Be Tested On:</h3>
           <ul className="feature-list">
             <li>
@@ -93,19 +93,19 @@ const Welcome = ({ onStartQuiz, totalQuestions, loading, error }) => {
           )}
           <button 
             className={`start-button ${loading ? 'loading' : ''}`} 
-            onClick={onStartQuiz}
+            onClick={onStartExam}
             disabled={loading}
           >
             <span className="button-icon">{loading ? '⏳' : '🚀'}</span>
             <span className="button-text">
-              {loading ? 'Loading Questions...' : 'Start Quiz'}
+              {loading ? 'Loading Questions...' : 'Start Exam'}
             </span>
             {!loading && <span className="button-arrow">→</span>}
           </button>
         </div>
 
         <div className="tips-section">
-          <h4 className="tips-title">Pro Tips for ReactJS Quiz:</h4>
+          <h4 className="tips-title">Pro Tips for ReactJS Exam:</h4>
           <div className="tips-grid">
             <div className="tip-item">
               <span className="tip-number">1</span>

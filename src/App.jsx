@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react'
 import LandingPage from './components/LandingPage'
 import AdminDashboard from './components/AdminDashboard'
 import StudentProfile from './components/StudentProfile'
-import QuizTaker from './components/QuizTaker'
+import ExamTaker from './components/ExamTaker'
 import QuizApiService from './services/api'
 import config from './config'
 import './App.css'
 
 function App() {
-  const [currentView, setCurrentView] = useState('landing') // 'landing', 'admin', 'student', 'quiz'
+  const [currentView, setCurrentView] = useState('landing') // 'landing', 'admin', 'student', 'exam'
   const [userType, setUserType] = useState(null) // 'admin', 'student', 'attempt'
   const [userData, setUserData] = useState(null)
   const [error, setError] = useState(null)
@@ -33,7 +33,7 @@ function App() {
     } catch (error) {
       console.error('Backend connection failed:', error)
       setBackendConnected(false)
-      setError('Unable to connect to the quiz server. Please make sure the backend is running.')
+      setError('Unable to connect to the exam server. Please make sure the backend is running.')
     }
   }
 
@@ -64,7 +64,7 @@ function App() {
           setCurrentView('student')
           break
         case 'attempt':
-          setCurrentView('quiz')
+          setCurrentView('exam')
           break
         default:
           setError('Unknown user type')
@@ -87,7 +87,7 @@ function App() {
     setError(null)
   }
 
-  const handleExitQuiz = () => {
+  const handleExitExam = () => {
     setCurrentView('landing')
     setUserType(null)
     setUserData(null)
@@ -135,10 +135,10 @@ function App() {
         />
       )}
       
-      {currentView === 'quiz' && userData && (
-        <QuizTaker 
+      {currentView === 'exam' && userData && (
+        <ExamTaker 
           attemptId={userData.attemptId}
-          onExit={handleExitQuiz}
+          onExit={handleExitExam}
         />
       )}
     </div>

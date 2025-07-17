@@ -32,7 +32,7 @@ class QuizApiService {
     }
   }
 
-  // Start a quiz for a specific attempt ID
+  // Start an exam for a specific attempt ID
   static async startQuiz(attemptId) {
     try {
       const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/quiz/start/${attemptId}`, {
@@ -40,17 +40,17 @@ class QuizApiService {
       });
       
       if (!data.success) {
-        throw new Error(data.message || 'Failed to start quiz');
+        throw new Error(data.message || 'Failed to start exam');
       }
 
       return data.data;
     } catch (error) {
-      console.error('Error starting quiz:', error);
-      throw new Error(`Failed to start quiz: ${error.message}`);
+      console.error('Error starting exam:', error);
+      throw new Error(`Failed to start exam: ${error.message}`);
     }
   }
 
-  // Submit quiz answers and get results
+  // Submit exam answers and get results
   static async submitQuiz(attemptId, answers, totalTime, timeLeft) {
     try {
       const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/quiz/submit`, {
@@ -64,17 +64,17 @@ class QuizApiService {
       });
       
       if (!data.success) {
-        throw new Error(data.message || 'Failed to submit quiz');
+        throw new Error(data.message || 'Failed to submit exam');
       }
 
       return data.data;
     } catch (error) {
-      console.error('Error submitting quiz:', error);
-      throw new Error(`Failed to submit quiz: ${error.message}`);
+      console.error('Error submitting exam:', error);
+      throw new Error(`Failed to submit exam: ${error.message}`);
     }
   }
 
-  // Validate quiz attempt
+  // Validate exam attempt
   static async validateQuizAttempt(attemptId) {
     try {
       const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/student/attempt/${attemptId}/validate`, {
@@ -82,13 +82,13 @@ class QuizApiService {
       });
       
       if (!data.success) {
-        throw new Error(data.message || 'Failed to validate quiz attempt');
+        throw new Error(data.message || 'Failed to validate exam attempt');
       }
 
       return data.data;
     } catch (error) {
-      console.error('Error validating quiz attempt:', error);
-      throw new Error(`Failed to validate quiz attempt: ${error.message}`);
+      console.error('Error validating exam attempt:', error);
+      throw new Error(`Failed to validate exam attempt: ${error.message}`);
     }
   }
 
@@ -107,7 +107,7 @@ class QuizApiService {
     }
   }
 
-  // Get quiz statistics
+  // Get exam statistics
   static async getQuizStats() {
     try {
       const data = await this.fetchWithErrorHandling(`${API_BASE_URL}/quiz/stats`, {

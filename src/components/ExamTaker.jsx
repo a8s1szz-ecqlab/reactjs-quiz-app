@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Exam from './Exam';
 import Results from './Results';
 import QuizApiService from '../services/api';
-import './QuizTaker.css';
+import './ExamTaker.css';
 
 const ExamTaker = ({ attemptId, onExit }) => {
   const [currentView, setCurrentView] = useState('loading');

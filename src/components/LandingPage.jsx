@@ -38,7 +38,7 @@ const LandingPage = ({ onIdentifierSubmit }) => {
     <div className="landing-page">
       <div className="landing-container">
         <div className="landing-header">
-          <h1>ReactJS Proficiency Quiz</h1>
+          <h1>ReactJS Proficiency Exam</h1>
           <p className="landing-subtitle">
             A comprehensive ReactJS proficiency assessment platform
           </p>
@@ -55,7 +55,7 @@ const LandingPage = ({ onIdentifierSubmit }) => {
                 id="identifier"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="Admin token, Student ID, or Quiz Attempt ID"
+                placeholder="Admin token, Student ID, or Exam Attempt ID"
                 className={`form-input ${error ? 'error' : ''}`}
                 disabled={isLoading}
               />
@@ -85,17 +85,17 @@ const LandingPage = ({ onIdentifierSubmit }) => {
             <div className="access-card">
               <div className="access-icon admin">👨‍💼</div>
               <h4>Admin Access</h4>
-              <p>Use your admin token to manage students and assign quiz attempts</p>
+              <p>Use your admin token to manage students and assign exam attempts</p>
             </div>
             <div className="access-card">
               <div className="access-icon student">👨‍🎓</div>
               <h4>Student Profile</h4>
-              <p>Enter your Student ID to view your profile and quiz results</p>
+              <p>Enter your Student ID to view your profile and exam results</p>
             </div>
             <div className="access-card">
               <div className="access-icon attempt">📝</div>
-              <h4>Take Quiz</h4>
-              <p>Use your Quiz Attempt ID to start an assigned quiz</p>
+              <h4>Take Exam</h4>
+              <p>Use your Exam Attempt ID to start an assigned exam</p>
             </div>
           </div>
         </div>

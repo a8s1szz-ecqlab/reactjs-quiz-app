@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PDFService from '../services/pdfService';
 import './Results.css';
 
-const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true, studentInfo = null, attemptId = null }) => {
+const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, studentInfo = null, attemptId = null }) => {
   const { 
     score, 
     totalQuestions, 
@@ -61,7 +61,7 @@ const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true, stud
         completedAt
       };
       
-      await PDFService.generateQuizResultsPDF(resultData, studentInfo);
+      await PDFService.generateExamResultsPDF(resultData, studentInfo);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to generate PDF. Please try again.');
@@ -140,9 +140,9 @@ const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true, stud
           </button>
           
           {showRetake ? (
-            <button className="restart-button" onClick={onRestartQuiz}>
+            <button className="restart-button" onClick={onRestartExam}>
               <span className="button-icon">🔄</span>
-              Retake ReactJS Quiz
+              Retake ReactJS Exam
             </button>
           ) : (
             <button className="logout-button" onClick={onBackToHome}>

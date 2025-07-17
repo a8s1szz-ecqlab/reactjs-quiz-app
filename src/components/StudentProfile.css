@@ -843,16 +843,16 @@
   outline-offset: 2px;
 }
 
-.action-button.take-quiz {
+.action-button.take-exam {
   background: var(--success);
   color: white;
 }
 
-.action-button.take-quiz:hover {
+.action-button.take-exam:hover {
   background: #059669;
 }
 
-.action-button.take-quiz:focus {
+.action-button.take-exam:focus {
   outline: 2px solid var(--success);
   outline-offset: 2px;
 }
