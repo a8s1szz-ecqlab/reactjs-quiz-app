@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import QuizApiService from '../services/api';
+import PDFService from '../services/pdfService';
 import './StudentProfile.css';
 
 const StudentProfile = ({ studentId, onLogout }) => {
@@ -10,6 +11,7 @@ const StudentProfile = ({ studentId, onLogout }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeView, setActiveView] = useState('profile');
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   useEffect(() => {
     loadStudentProfile();
@@ -82,7 +84,55 @@ const StudentProfile = ({ studentId, onLogout }) => {
       'Advanced': '#27ae60',
       'Expert': '#8e44ad'
     };
-    return colors[level] || '#95a5a6';
+    return colors[level] || '#666';
+  };
+
+  const handleDownloadAttemptPDF = async (attemptData) => {
+    setIsGeneratingPDF(true);
+    try {
+      const resultData = {
+        score: attemptData.results.score,
+        totalQuestions: attemptData.results.totalQuestions,
+        percentage: attemptData.results.percentage,
+        proficiencyLevel: attemptData.results.proficiencyLevel,
+        totalTime: attemptData.results.totalTime,
+        incorrectAnswers: attemptData.results.incorrectAnswers || [],
+        skippedCount: attemptData.results.skippedCount || 0,
+        detailedResults: attemptData.results.detailedResults || [],
+        attemptId: attemptData.attemptId,
+        completedAt: attemptData.completedAt
+      };
+      
+      const studentInfo = {
+        name: profile.student.name,
+        studentId: profile.student.studentId
+      };
+      
+      await PDFService.generateQuizResultsPDF(resultData, studentInfo);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  const handleDownloadSummaryPDF = async () => {
+    setIsGeneratingPDF(true);
+    try {
+      const completedAttempts = attempts.filter(a => a.status === 'completed');
+      const studentInfo = {
+        name: profile.student.name,
+        studentId: profile.student.studentId
+      };
+      
+      await PDFService.generateStudentSummaryPDF(completedAttempts, studentInfo);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const getScoreColor = (percentage) => {
@@ -243,7 +293,18 @@ const StudentProfile = ({ studentId, onLogout }) => {
 
         {activeView === 'attempts' && (
           <div className="attempts-view">
-            <h2>All Quiz Attempts</h2>
+            <div className="attempts-header">
+              <h2>All Quiz Attempts</h2>
+              {attempts.filter(a => a.status === 'completed').length > 0 && (
+                <button 
+                  onClick={handleDownloadSummaryPDF}
+                  className="action-button download-summary"
+                  disabled={isGeneratingPDF}
+                >
+                  {isGeneratingPDF ? '⏳ Generating...' : '📄 Download Summary PDF'}
+                </button>
+              )}
+            </div>
             <div className="attempts-table">
               <table>
                 <thead>
@@ -271,12 +332,21 @@ const StudentProfile = ({ studentId, onLogout }) => {
                       </td>
                       <td>
                         {attempt.status === 'completed' && (
-                          <button 
-                            onClick={() => loadAttemptDetails(attempt.attemptId)}
-                            className="action-button"
-                          >
-                            View Details
-                          </button>
+                          <>
+                            <button 
+                              onClick={() => loadAttemptDetails(attempt.attemptId)}
+                              className="action-button"
+                            >
+                              View Details
+                            </button>
+                            <button 
+                              onClick={() => handleDownloadAttemptPDF(attempt)}
+                              className="action-button download-pdf"
+                              disabled={isGeneratingPDF}
+                            >
+                              {isGeneratingPDF ? '⏳' : '📄'} PDF
+                            </button>
+                          </>
                         )}
                         {attempt.status === 'assigned' && (
                           <a 
@@ -416,6 +486,25 @@ const StudentProfile = ({ studentId, onLogout }) => {
                   🎉 Perfect! You got all questions correct!
                 </div>
               )}
+
+              <div className="attempt-actions">
+                <button 
+                  onClick={() => handleDownloadAttemptPDF(attemptDetails)}
+                  className="download-button"
+                  disabled={isGeneratingPDF}
+                >
+                  <span className="button-icon">{isGeneratingPDF ? '⏳' : '📄'}</span>
+                  {isGeneratingPDF ? 'Generating...' : 'Download PDF Report'}
+                </button>
+                
+                <button 
+                  onClick={() => setActiveView('attempts')}
+                  className="back-button"
+                >
+                  <span className="button-icon">⬅️</span>
+                  Back to Attempts
+                </button>
+              </div>
 
               <div className="motivational-section">
                 <div className="motivational-text">

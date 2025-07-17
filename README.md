@@ -69,6 +69,8 @@ This application is configured for easy deployment to Render's free tier. Follow
 - **Personal Dashboard**: View profile statistics and quiz history
 - **Detailed Results**: Question-by-question analysis with explanations
 - **Progress Tracking**: Monitor improvement over multiple attempts
+- **PDF Reports**: Download comprehensive PDF reports of quiz results
+- **Quiz History Export**: Generate summary PDFs of all completed attempts
 - **Responsive Interface**: Optimized for desktop and mobile devices
 
 ### 📝 Quiz System
@@ -78,6 +80,7 @@ This application is configured for easy deployment to Render's free tier. Follow
 - **Time Management**: Configurable time limits with visual countdown
 - **Immediate Feedback**: Detailed explanations for all questions
 - **Progress Persistence**: Save and resume quiz sessions
+- **PDF Generation**: Automatic PDF report generation for completed quizzes
 
 ## 🚀 Quick Start
 
@@ -170,12 +173,14 @@ The application uses a unified landing page that accepts different types of iden
 2. **Overview**: View personal statistics and progress
 3. **History**: Browse previous quiz attempts and results
 4. **Analysis**: Review detailed question-by-question breakdowns
+5. **Export**: Download PDF reports of individual attempts or complete history
 
 ### Quiz Taking Workflow
 1. **Start**: Enter attempt ID on landing page
 2. **Validation**: System validates attempt and student information
 3. **Quiz**: Complete assessment within time limit
 4. **Results**: View immediate feedback and detailed analysis
+5. **Download**: Generate and download a comprehensive PDF report
 
 ## 🏗️ Project Structure
 
@@ -190,7 +195,8 @@ reactjs-quiz-app/
 │   │   ├── Quiz.jsx              # Core quiz component
 │   │   └── Results.jsx           # Results display
 │   ├── services/                 # API communication
-│   │   └── api.js                # API service layer
+│   │   ├── api.js                # API service layer
+│   │   └── pdfService.js         # PDF generation utilities
 │   └── data/                     # Quiz questions database
 ├── backend/                      # Node.js backend API
 │   ├── src/
@@ -324,7 +330,26 @@ The application includes 200+ React.js questions covering:
 - Component testing strategies
 - Integration testing approaches
 
-## 🔒 Security Features
+## � PDF Export Features
+
+### Individual Quiz Reports
+- **Comprehensive Results**: Score breakdown, proficiency assessment, and time analysis
+- **Question Review**: Detailed breakdown of incorrect answers with explanations
+- **Student Information**: Includes student name, ID, and attempt details
+- **Professional Format**: Clean, printable PDF layout with proper branding
+
+### Student Summary Reports
+- **Performance History**: Overview of all completed quiz attempts
+- **Progress Tracking**: Visual representation of improvement over time
+- **Aggregate Statistics**: Overall performance metrics and trends
+
+### Download Options
+- **Results Page**: Direct download from quiz completion screen
+- **Student Profile**: Download individual attempt reports from history
+- **Bulk Export**: Summary PDF of all student attempts
+- **Mobile Friendly**: PDF generation works on all devices
+
+## �🔒 Security Features
 
 - **Role-based authentication** with middleware protection
 - **Input validation** for all user inputs
@@ -336,16 +361,26 @@ The application includes 200+ React.js questions covering:
 ## 🚦 Production Deployment
 
 ### Environment Configuration
-```bash
-# Frontend (build time)
-VITE_API_URL=https://your-api-domain.com/api
 
-# Backend (runtime)
+**Frontend Environment Variables** (prefix with `VITE_`):
+```bash
+# API Configuration
+VITE_API_URL=/api                              # Development
+VITE_API_URL=https://your-api-domain.com/api   # Production
+
+# Admin Authentication
+VITE_ADMIN_TOKEN=admin_2025_reactjs_quiz       # Set your admin token
+```
+
+**Backend Environment Variables**:
+```bash
 PORT=3001
 NODE_ENV=production
 DATABASE_URL=your-database-connection
 ADMIN_TOKEN=your-secure-admin-token
 ```
+
+> 📋 **Note**: Copy `.env.example` to `.env` and customize for local development. See [`docs/ENVIRONMENT_VARIABLES.md`](./docs/ENVIRONMENT_VARIABLES.md) for detailed configuration guide.
 
 ### Build Process
 ```bash

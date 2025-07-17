@@ -166,6 +166,8 @@ const QuizTaker = ({ attemptId, onExit }) => {
           onRetakeQuiz={handleRetakeQuiz}
           onBackToHome={onExit}
           showRetake={false} // Disable retake for attempt-based quizzes
+          studentInfo={attemptData?.student}
+          attemptId={attemptId}
         />
       </div>
     );

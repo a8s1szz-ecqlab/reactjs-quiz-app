@@ -857,6 +857,134 @@
   outline-offset: 2px;
 }
 
+.action-button.download-pdf {
+  background: var(--secondary);
+  color: white;
+  margin-left: var(--space-2);
+}
+
+.action-button.download-pdf:hover:not(:disabled) {
+  background: #6b46c1;
+}
+
+.action-button.download-pdf:disabled {
+  background: var(--gray-300);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.action-button.download-summary {
+  background: var(--secondary);
+  color: white;
+}
+
+.action-button.download-summary:hover:not(:disabled) {
+  background: #6b46c1;
+}
+
+.action-button.download-summary:disabled {
+  background: var(--gray-300);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Attempts Header */
+.attempts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.attempts-header h2 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Attempt Actions */
+.attempt-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  margin: var(--space-6) 0;
+  padding: var(--space-4);
+  background: var(--background);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.download-button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.download-button:hover:not(:disabled) {
+  background: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.download-button:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.download-button:disabled {
+  background: var(--gray-300);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.back-button {
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.back-button:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-300);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.back-button:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 /* Attempts Table */
 .attempts-view {
   background-color: var(--surface);
@@ -1167,6 +1295,23 @@
   
   .stats-grid {
     grid-template-columns: 1fr 1fr;
+  }
+  
+  .attempts-header {
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: stretch;
+  }
+  
+  .attempt-actions {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .download-button,
+  .back-button {
+    width: 100%;
+    justify-content: center;
   }
   
   .student-nav {

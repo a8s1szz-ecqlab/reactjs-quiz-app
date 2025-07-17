@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import PDFService from '../services/pdfService';
 import './Results.css';
 
-const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true }) => {
+const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true, studentInfo = null, attemptId = null }) => {
   const { 
     score, 
     totalQuestions, 
@@ -12,10 +13,12 @@ const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true }) =>
     incorrectAnswers = [], 
     skippedCount = 0,
     detailedResults = [],
-    error 
+    error,
+    completedAt
   } = results;
   
   const [showReview, setShowReview] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   
   // Use proficiency level from backend or fallback to local calculation
   const gradeInfo = proficiencyLevel || {
@@ -40,6 +43,31 @@ const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true }) =>
     if (percentage >= 70) return '👍';
     if (percentage >= 60) return '👌';
     return '💪';
+  };
+
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true);
+    try {
+      const resultData = {
+        score,
+        totalQuestions,
+        percentage,
+        proficiencyLevel,
+        totalTime,
+        incorrectAnswers,
+        skippedCount,
+        detailedResults,
+        attemptId,
+        completedAt
+      };
+      
+      await PDFService.generateQuizResultsPDF(resultData, studentInfo);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   return (
@@ -100,6 +128,15 @@ const Results = ({ results, onBackToHome, onRestartQuiz, showRetake = true }) =>
           >
             <span className="button-icon">{showReview ? '👁️' : '🔍'}</span>
             {showReview ? 'Hide' : 'Review'} Incorrect Answers ({actualIncorrectAnswers.length})
+          </button>
+          
+          <button 
+            className="download-button" 
+            onClick={handleDownloadPDF}
+            disabled={isGeneratingPDF}
+          >
+            <span className="button-icon">{isGeneratingPDF ? '⏳' : '📄'}</span>
+            {isGeneratingPDF ? 'Generating...' : 'Download PDF Report'}
           </button>
           
           {showRetake ? (

@@ -1,23 +1,12 @@
-// API configuration - use proxy in development, backend URL in production
-const isDevelopment = import.meta.env.DEV;
+import config from '../config';
 
-// Get API base URL with better fallback handling
-const getApiBaseUrl = () => {
-  if (isDevelopment) {
-    return '/api';
-  }
-  
-  // In production, try multiple sources for the API URL
-  const envApiUrl = import.meta.env.VITE_API_URL;
-  const defaultApiUrl = 'https://reactjs-quiz-backend.onrender.com/api';
-  
-  return envApiUrl || defaultApiUrl;
-};
-
-const API_BASE_URL = getApiBaseUrl();
+// API service for communicating with the backend
+const API_BASE_URL = config.API_URL;
 
 // Log the final API URL for debugging
-console.log('Final API_BASE_URL:', API_BASE_URL);
+if (config.isDevelopment) {
+  console.log('Final API_BASE_URL:', API_BASE_URL);
+}
 
 // API service for communicating with the backend
 class QuizApiService {

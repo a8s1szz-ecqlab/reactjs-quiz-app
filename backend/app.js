@@ -1,3 +1,6 @@
+// Load environment variables
+require('dotenv').config();
+
 const DatabaseOperations = require('./src/data/database');
 
 // Initialize database before starting the server

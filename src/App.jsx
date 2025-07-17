@@ -4,6 +4,7 @@ import AdminDashboard from './components/AdminDashboard'
 import StudentProfile from './components/StudentProfile'
 import QuizTaker from './components/QuizTaker'
 import QuizApiService from './services/api'
+import config from './config'
 import './App.css'
 
 function App() {
@@ -122,7 +123,7 @@ function App() {
       
       {currentView === 'admin' && userData && (
         <AdminDashboard 
-          adminToken={userData.role === 'admin' ? 'admin_2025_reactjs_quiz' : ''}
+          adminToken={userData.role === 'admin' ? config.ADMIN_TOKEN : ''}
           onLogout={handleLogout}
         />
       )}

@@ -2,12 +2,13 @@ const { Low } = require('lowdb');
 const { JSONFile } = require('lowdb/node');
 const path = require('path');
 const fs = require('fs');
+const config = require('../config');
 
 // Database file path - use persistent directory for production
 const getDbPath = () => {
-  if (process.env.NODE_ENV === 'production') {
-    // In production, ensure we have a writable directory
-    const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
+  if (config.isProduction) {
+    // In production, use configured data directory or fallback
+    const dataDir = config.DATA_DIR || path.join(process.cwd(), 'data');
     
     // Create data directory if it doesn't exist
     if (!fs.existsSync(dataDir)) {
@@ -39,7 +40,7 @@ const initializeDatabase = async () => {
       metadata: {
         nextUserId: 1,
         nextAttemptId: 1,
-        adminToken: "admin_2025_reactjs_quiz",
+        adminToken: config.ADMIN_TOKEN,
         initialized: new Date().toISOString()
       }
     };
@@ -75,8 +76,8 @@ const createSampleData = async () => {
     {
       id: 3,
       studentId: "RJSPE01819332",
-      name: "Jan Erisse Garcia",
-      email: "AAYVVZZ@mmm.com",
+      name: "Jan Erisse",
+      email: "AAYVVZZ@company.com",
       role: "student",
       createdAt: new Date().toISOString(),
       isActive: true
@@ -84,8 +85,8 @@ const createSampleData = async () => {
     {
       id: 4,
       studentId: "RJSPE02029879",
-      name: "Rashmi Kokkalaki",
-      email: "ACKX3ZZ@mmm.com",
+      name: "Rashmi",
+      email: "ACKX3ZZ@company.com",
       role: "student",
       createdAt: new Date().toISOString(),
       isActive: true
@@ -308,7 +309,7 @@ const DatabaseOperations = {
 
   // Admin operations
   getAdminToken() {
-    return "admin_2025_reactjs_quiz"; // Fallback for synchronous access
+    return config.ADMIN_TOKEN; // Use config instead of hardcoded value
   },
 
   // Database maintenance
@@ -328,7 +329,7 @@ const DatabaseOperations = {
       metadata: {
         nextUserId: 1,
         nextAttemptId: 1,
-        adminToken: "admin_2025_reactjs_quiz",
+        adminToken: config.ADMIN_TOKEN,
         initialized: new Date().toISOString()
       }
     };
