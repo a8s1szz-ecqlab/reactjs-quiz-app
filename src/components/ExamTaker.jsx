@@ -30,6 +30,23 @@ const ExamTaker = ({ attemptId, onExit }) => {
 
       // Start the exam and get questions
       const exam = await QuizApiService.startQuiz(attemptId);
+      
+      // Check if exam is already completed
+      if (exam.alreadyCompleted && exam.results) {
+        setResults(exam.results);
+        setCurrentView('results');
+        return;
+      }
+      
+      // Check if exam time has exceeded
+      if (exam.timeExceeded) {
+        // Time exceeded but we still have the exam data
+        // Set remaining time to 0 and let the exam component handle auto-submit
+        setExamData(exam);
+        setCurrentView('exam');
+        return;
+      }
+      
       setExamData(exam);
       setCurrentView('exam');
       
@@ -152,6 +169,7 @@ const ExamTaker = ({ attemptId, onExit }) => {
           attemptId={examData.attemptId}
           questions={examData.questions}
           timeLimit={examData.timeLimit}
+          remainingTime={examData.remainingTime}
           onExamComplete={handleExamComplete}
         />
       </div>

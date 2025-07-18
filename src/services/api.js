@@ -67,7 +67,7 @@ class QuizApiService {
         throw new Error(data.message || 'Failed to submit exam');
       }
 
-      return data.data;
+      return data; // Return the full response object since frontend expects data.data format
     } catch (error) {
       console.error('Error submitting exam:', error);
       throw new Error(`Failed to submit exam: ${error.message}`);

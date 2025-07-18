@@ -1,30 +1,57 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import QuizApiService from '../services/api';
 import './Exam.css';
 
-const Exam = ({ attemptId, questions, timeLimit, onExamComplete }) => {
+const Exam = ({ attemptId, questions, timeLimit, remainingTime, onExamComplete }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState(new Array(questions.length).fill(null));
-  const [timeLeft, setTimeLeft] = useState(timeLimit || 20 * 60); // Use provided time limit or default to 20 minutes
+  const [timeLeft, setTimeLeft] = useState(remainingTime !== undefined ? remainingTime : (timeLimit || 20 * 60)); // Use server-provided remaining time
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [examStartTime] = useState(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timeWarning, setTimeWarning] = useState('');
+  const submissionInProgress = useRef(false); // Use ref to prevent race conditions
 
   const currentQuestion = questions[currentQuestionIndex];
   const selectedAnswer = userAnswers[currentQuestionIndex];
+
+  // Check if time is already exceeded when component loads
+  useEffect(() => {
+    if (remainingTime <= 0) {
+      setTimeLeft(0);
+      setTimeWarning('Time is up! Submitting exam automatically...');
+      setIsTimerActive(false);
+      // Give a brief moment for user to see the message, then auto-submit
+      setTimeout(() => {
+        handleFinishExam();
+      }, 1000);
+    }
+  }, [remainingTime]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Timer effect - runs for entire exam duration
   useEffect(() => {
     if (isTimerActive && timeLeft > 0) {
       const timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
+        
+        // Show warning when time is running low
+        if (timeLeft === 300) { // 5 minutes
+          setTimeWarning('Warning: Only 5 minutes remaining!');
+        } else if (timeLeft === 60) { // 1 minute
+          setTimeWarning('Warning: Only 1 minute remaining!');
+        } else if (timeLeft === 30) { // 30 seconds
+          setTimeWarning('Warning: Only 30 seconds remaining!');
+        }
       }, 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0) {
-      // Time's up, finish exam automatically
+    } else if (isTimerActive && timeLeft <= 0) {
+      // Time's up, finish exam automatically (only if timer is still active)
+      setTimeWarning('Time is up! Submitting exam automatically...');
+      setTimeLeft(0); // Ensure it doesn't go negative
+      setIsTimerActive(false); // Stop the timer
       handleFinishExam();
     }
-  }, [timeLeft, isTimerActive]);
+  }, [timeLeft, isTimerActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAnswerSelect = (answerIndex) => {
     const newAnswers = [...userAnswers];
@@ -45,6 +72,13 @@ const Exam = ({ attemptId, questions, timeLimit, onExamComplete }) => {
   };
 
   const handleFinishExam = async () => {
+    // Prevent multiple submissions using ref for immediate check
+    if (submissionInProgress.current || isSubmitting) {
+      console.log('Submission already in progress, ignoring duplicate call');
+      return;
+    }
+    
+    submissionInProgress.current = true;
     setIsTimerActive(false);
     setIsSubmitting(true);
     
@@ -59,14 +93,34 @@ const Exam = ({ attemptId, questions, timeLimit, onExamComplete }) => {
       const totalTime = Math.round((Date.now() - examStartTime) / 1000);
       
       // Submit to backend with attempt ID and get results
-      const results = await QuizApiService.submitQuiz(attemptId, answersForSubmission, totalTime, timeLeft);
+      const response = await QuizApiService.submitQuiz(attemptId, answersForSubmission, totalTime, timeLeft);
       
-      // Pass results to parent component
-      onExamComplete(results);
+      // Handle server response - the server now validates time on its end
+      if (response.warning) {
+        // Show warning if exam was submitted overtime
+        console.warn(response.warning);
+      }
+      
+      // Pass results to parent component, including any warnings
+      onExamComplete({
+        ...response.data,
+        warning: response.warning,
+        message: response.message
+      });
       
     } catch (error) {
       console.error('Failed to submit exam:', error);
-      // Fallback to local calculation if backend fails
+      
+      // Check if the error is due to time limit exceeded
+      if (error.message && error.message.includes('time limit')) {
+        onExamComplete({
+          error: 'Time limit exceeded. Please contact your administrator.',
+          timeExceeded: true
+        });
+        return;
+      }
+      
+      // Fallback to local calculation if backend fails for other reasons
       const detailedAnswers = questions.map((question, index) => ({
         questionId: question.id,
         question: question.question,
@@ -90,6 +144,7 @@ const Exam = ({ attemptId, questions, timeLimit, onExamComplete }) => {
       });
     } finally {
       setIsSubmitting(false);
+      submissionInProgress.current = false;
     }
   };
 
@@ -134,6 +189,11 @@ const Exam = ({ attemptId, questions, timeLimit, onExamComplete }) => {
             <div className="timer-text">{formatTime(timeLeft)}</div>
             <div className="timer-label">Time Left</div>
           </div>
+          {timeWarning && (
+            <div className="time-warning">
+              ⚠️ {timeWarning}
+            </div>
+          )}
         </div>
 
         <div className="score-section">

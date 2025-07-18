@@ -5,6 +5,43 @@
   padding: var(--space-6);
 }
 
+/* Banner styles for notifications */
+.error-banner,
+.warning-banner,
+.time-exceeded-banner {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 500;
+}
+
+.error-banner {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #800;
+}
+
+.warning-banner {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+}
+
+.time-exceeded-banner {
+  background: #fff4e6;
+  border: 1px solid #ffd580;
+  color: #b8860b;
+}
+
+.error-icon,
+.warning-icon,
+.time-icon {
+  font-size: var(--font-size-lg);
+}
+
 .results-wrapper {
   max-width: 900px;
   margin: 0 auto;

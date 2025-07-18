@@ -22,24 +22,94 @@ const startQuiz = async (req, res) => {
     }
 
     if (attempt.status === 'completed') {
-      return res.status(400).json({
-        success: false,
-        message: 'Quiz attempt already completed'
-      });
+      // If attempt is already completed, return the results instead of error
+      if (attempt.results) {
+        return res.json({
+          success: false,
+          message: 'Quiz attempt already completed',
+          alreadyCompleted: true,
+          results: attempt.results
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'Quiz attempt already completed but no results found'
+        });
+      }
+    }
+
+        // Check if time limit has been exceeded for ongoing exams
+    if (attempt.status === 'in_progress' && attempt.startedAt) {
+      const startTime = new Date(attempt.startedAt);
+      const currentTime = new Date();
+      const timeElapsed = Math.floor((currentTime - startTime) / 1000);
+      const timeLimit = attempt.timeLimit || (20 * 60);
+      
+      if (timeElapsed > timeLimit) {
+        console.log(`Time limit exceeded for attempt ${attemptId}. Time: ${timeElapsed}s, Limit: ${timeLimit}s`);
+        
+        // Don't auto-submit here - let frontend submit with actual answers
+        // Just return the exam data with a flag indicating time exceeded
+        return res.json({
+          success: true,
+          data: {
+            attemptId: attempt.attemptId,
+            questions: attempt.questions,
+            totalQuestions: attempt.questions.length,
+            timeLimit: timeLimit,
+            startedAt: attempt.startedAt,
+            remainingTime: 0, // No time remaining
+            serverTime: new Date().toISOString(),
+            timeExceeded: true,
+            message: 'Time limit exceeded - please submit immediately'
+          }
+        });
+      }
     }
 
     // Get questions if not already generated
     let questions = attempt.questions;
+    let startedAt = attempt.startedAt;
+    
     if (!questions || questions.length === 0) {
       questions = getQuizQuestions(50);
+      startedAt = new Date().toISOString();
       
       // Update attempt with questions and start time
       const updates = {
         questions: questions,
         status: 'in_progress',
-        startedAt: new Date().toISOString()
+        startedAt: startedAt
       };
       await updateAttempt(attemptId, updates);
+    }
+    
+    // Calculate remaining time based on server-side validation
+    const serverStartTime = new Date(startedAt);
+    const currentTime = new Date();
+    const timeElapsed = Math.floor((currentTime - serverStartTime) / 1000);
+    const timeLimit = attempt.timeLimit || (20 * 60);
+    const remainingTime = Math.max(0, timeLimit - timeElapsed);
+    
+    // Double-check if time has just exceeded while calculating
+    if (remainingTime <= 0) {
+      // Time just exceeded - return exam data but indicate time exceeded
+      console.log(`Time limit just exceeded for attempt ${attemptId}. Time: ${timeElapsed}s, Limit: ${timeLimit}s`);
+      
+      return res.json({
+        success: true,
+        data: {
+          attemptId: attempt.attemptId,
+          questions: questions,
+          totalQuestions: questions.length,
+          timeLimit: timeLimit,
+          startedAt: startedAt,
+          remainingTime: 0,
+          serverTime: new Date().toISOString(),
+          timeExceeded: true,
+          message: 'Time limit just exceeded - please submit immediately'
+        }
+      });
     }
     
     res.json({
@@ -48,8 +118,10 @@ const startQuiz = async (req, res) => {
         attemptId: attempt.attemptId,
         questions: questions,
         totalQuestions: questions.length,
-        timeLimit: attempt.timeLimit,
-        startedAt: attempt.startedAt || new Date().toISOString(),
+        timeLimit: timeLimit,
+        startedAt: startedAt,
+        remainingTime: remainingTime,
+        serverTime: new Date().toISOString(),
         message: 'Quiz started successfully'
       }
     });
@@ -98,36 +170,96 @@ const submitQuiz = async (req, res) => {
         message: 'Quiz attempt already completed'
       });
     }
+
+    // Server-side time validation
+    if (!attempt.startedAt) {
+      return res.status(400).json({
+        success: false,
+        message: 'Quiz was never started properly'
+      });
+    }
+
+    const startTime = new Date(attempt.startedAt);
+    const currentTime = new Date();
+    const actualTimeElapsed = Math.floor((currentTime - startTime) / 1000); // in seconds
+    const timeLimit = attempt.timeLimit || (20 * 60); // Default 20 minutes
+
+    // Check if time limit has been exceeded
+    if (actualTimeElapsed > timeLimit) {
+      // Time exceeded - force submission but mark as overtime
+      console.log(`Time limit exceeded for attempt ${attemptId}. Actual: ${actualTimeElapsed}s, Limit: ${timeLimit}s`);
+      
+      const validationResults = validateAnswers(answers);
+      const proficiencyLevel = getProficiencyLevel(validationResults.percentage);
+
+      const results = {
+        score: validationResults.score,
+        totalQuestions: validationResults.totalQuestions,
+        percentage: validationResults.percentage,
+        proficiencyLevel: proficiencyLevel,
+        detailedResults: validationResults.detailedResults,
+        incorrectAnswers: validationResults.incorrectAnswers,
+        skippedAnswers: validationResults.skippedAnswers,
+        skippedCount: validationResults.skippedCount,
+        timeTaken: timeLimit, // Use time limit as time taken since it was exceeded
+        timeExceeded: true,
+        actualTimeElapsed: actualTimeElapsed,
+        submittedAt: new Date().toISOString()
+      };
+
+      const updates = {
+        status: 'completed',
+        completedAt: new Date().toISOString(),
+        results: results,
+        timeTaken: timeLimit,
+        timeExceeded: true
+      };
+
+      await updateAttempt(attemptId, updates);
+
+      return res.json({
+        success: true,
+        data: results,
+        warning: 'Exam was submitted after the time limit. Results may be affected.',
+        message: 'Quiz submitted successfully (overtime)'
+      });
+    }
+
+    // Normal submission within time limit
+    const validationResults = validateAnswers(answers);
+    const proficiencyLevel = getProficiencyLevel(validationResults.percentage);
     
-    // Validate and calculate results
-    const results = validateAnswers(answers);
-    const proficiencyLevel = getProficiencyLevel(results.percentage);
+    // Use server-calculated time instead of client-reported time
+    const serverTimeTaken = Math.min(actualTimeElapsed, timeLimit);
     
-    // Prepare response data
-    const responseData = {
-      score: results.score,
-      totalQuestions: results.totalQuestions,
-      percentage: results.percentage,
+    const results = {
+      score: validationResults.score,
+      totalQuestions: validationResults.totalQuestions,
+      percentage: validationResults.percentage,
       proficiencyLevel: proficiencyLevel,
-      totalTime: totalTime || 0,
-      timeLeft: timeLeft || 0,
-      incorrectAnswers: results.incorrectAnswers,
-      skippedCount: results.skippedCount,
-      detailedResults: results.detailedResults
+      detailedResults: validationResults.detailedResults,
+      incorrectAnswers: validationResults.incorrectAnswers,
+      skippedAnswers: validationResults.skippedAnswers,
+      skippedCount: validationResults.skippedCount,
+      timeTaken: serverTimeTaken,
+      timeExceeded: false,
+      submittedAt: new Date().toISOString()
     };
 
     // Update attempt with results
     const updates = {
       status: 'completed',
       completedAt: new Date().toISOString(),
-      answers: answers,
-      results: responseData
+      results: results,
+      timeTaken: serverTimeTaken,
+      timeExceeded: false
     };
+
     await updateAttempt(attemptId, updates);
     
     res.json({
       success: true,
-      data: responseData,
+      data: results,
       message: 'Quiz submitted successfully'
     });
     

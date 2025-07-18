@@ -3,19 +3,53 @@ import PDFService from '../services/pdfService';
 import './Results.css';
 
 const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, studentInfo = null, attemptId = null }) => {
+  // Handle cases where results might be incomplete or missing
+  if (!results) {
+    return (
+      <div className="results-container">
+        <div className="results-card">
+          <div className="error-banner">
+            <span className="error-icon">⚠️</span>
+            <span>No results available to display.</span>
+          </div>
+          <div className="action-buttons">
+            <button onClick={onBackToHome} className="primary-button">
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const { 
-    score, 
-    totalQuestions, 
-    percentage, 
+    score = 0, 
+    totalQuestions = 0, 
+    percentage = 0, 
     proficiencyLevel, 
-    totalTime, 
-    timeLeft, 
+    totalTime = 0, 
+    timeLeft = 0, 
     incorrectAnswers = [], 
     skippedCount = 0,
     detailedResults = [],
     error,
-    completedAt
+    completedAt,
+    warning,
+    message,
+    timeExceeded,
+    autoSubmitted
   } = results;
+  
+  // Debug logging
+  console.log('Results component received:', {
+    score,
+    totalQuestions,
+    incorrectAnswersCount: incorrectAnswers.length,
+    skippedCount,
+    detailedResultsCount: detailedResults.length,
+    firstIncorrectAnswer: incorrectAnswers[0],
+    firstDetailedResult: detailedResults[0]
+  });
   
   const [showReview, setShowReview] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -32,6 +66,12 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
   
   // Calculate skipped count from local data if not provided by backend
   const skippedQuestions = skippedCount || detailedResults.filter(result => result.selectedAnswer === null).length;
+
+  console.log('Processed results:', {
+    actualIncorrectAnswersCount: actualIncorrectAnswers.length,
+    skippedQuestions,
+    firstActualIncorrectAnswer: actualIncorrectAnswers[0]
+  });
 
   const formatTime = (seconds) => {
     return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
@@ -77,6 +117,25 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
           <div className="error-banner">
             <span className="error-icon">⚠️</span>
             <span>{error}</span>
+          </div>
+        )}
+        
+        {warning && (
+          <div className="warning-banner">
+            <span className="warning-icon">⏰</span>
+            <span>{warning}</span>
+          </div>
+        )}
+        
+        {timeExceeded && (
+          <div className="time-exceeded-banner">
+            <span className="time-icon">🕐</span>
+            <span>
+              {autoSubmitted 
+                ? 'Time limit was exceeded and exam was automatically submitted' 
+                : 'Time limit was exceeded during this exam'
+              }
+            </span>
           </div>
         )}
         
