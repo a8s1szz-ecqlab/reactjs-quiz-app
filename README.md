@@ -1,6 +1,50 @@
 # ReactJS Proficiency Exam Application
 
-A comprehensive React.js exam application wit4. **Access the application**
+A comprehensive React.js exam application with **role-based access control** and **flexible database backends** (LowDB file-based or PostgreSQL via Supabase), designed to assess ReactJS proficiency through interactive exams with admin management and student tracking capabilities.
+
+![Exam Application](https://img.shields.io/badge/React-18.2.0-blue) ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple) ![Node.js](https://img.shields.io/badge/Node.js-16+-green) ![Database](https://img.shields.io/badge/Database-LowDB%20%7C%20Supabase-orange) ![License](https://img.shields.io/badge/license-MIT-green) ![Deployment](https://img.shields.io/badge/Deploy-Render-brightgreen)
+
+## 📋 Table of Contents
+
+- [Features](#-features)
+- [Quick Start](#-quick-start)
+- [Deployment](#-deployment)
+- [Database](#-database)
+- [Access Identifiers](#-access-identifiers)
+- [User Workflows](#-user-workflows)
+- [Project Structure](#-project-structure)
+- [API Documentation](#-api-documentation)
+- [Development](#-development)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+## 🚀 Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd reactjs-quiz-app
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # Install frontend dependencies
+   npm install
+   
+   # Install backend dependencies
+   cd backend && npm install && cd ..
+   ```
+
+3. **Start the development servers**
+   ```bash
+   # Start backend (terminal 1)
+   npm run backend:dev
+   
+   # Start frontend (terminal 2)  
+   npm run dev
+   ```
+
+4. **Access the application**
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:3001
 
@@ -32,67 +76,50 @@ This application is configured for easy deployment to Render's free tier. Follow
 
 > **Note**: Free tier services may take 30-60 seconds for the first load after being idle.
 
-## 💾 Databaseole-based access control** and **persistent file-based database**, designed to assess ReactJS proficiency through interactive exams with admin management and student tracking capabilities.
+## 💾 Database
 
-![Exam Application](https://img.shields.io/badge/React-18.2.0-blue) ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple) ![Node.js](https://img.shields.io/badge/Node.js-16+-green) ![Database](https://img.shields.io/badge/Database-LowDB-orange) ![License](https://img.shields.io/badge/license-MIT-green) ![Deployment](https://img.shields.io/badge/Deploy-Render-brightgreen)
+### Multiple Database Options
+The application supports two database backends:
 
-## 📋 Table of Contents
+#### 🗂️ LowDB (Default - File-Based)
+- **Database File**: `backend/src/data/quiz_database.json`
+- **Format**: Human-readable JSON
+- **Features**: Automatic initialization, backup functionality, async operations
+- **Benefits**: No database server required, easy development setup
+- **Best for**: Development, small deployments
 
-- [Features](#-features)
-- [Quick Start](#-quick-start)
-- [Deployment](#-deployment)
-- [Database](#-database)
-- [Access Identifiers](#-access-identifiers)
-- [User Workflows](#-user-workflows)
-- [Project Structure](#-project-structure)
-- [API Documentation](#-api-documentation)
-- [Development](#-development)
-- [Contributing](#-contributing)
-- [License](#-license)
+#### 🐘 PostgreSQL via Supabase
+- **Cloud Database**: Fully managed PostgreSQL
+- **Features**: Real-time updates, built-in auth, automatic backups
+- **Benefits**: Scalable, production-ready, advanced querying
+- **Best for**: Production deployments, multiple users
+
+### Configuration
+Switch between database types using environment variables:
+
+```bash
+# File-based storage (default)
+DATABASE_TYPE=lowdb
+
+# PostgreSQL via Supabase
+DATABASE_TYPE=supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+### Sample Data (Auto-Generated)
+Both database types initialize with sample data:
+- **4 Students**: John Doe, Jane Smith, Jan Erisse, Rashmi
+- **4 Exam Attempts**: One per student, all in "assigned" status
+- **Admin Token**: `admin_2025_reactjs_quiz`
+
+> 📖 **For Supabase setup guide**, see [SUPABASE_SETUP.md](./docs/SUPABASE_SETUP.md)  
+> 📖 **For detailed database documentation**, see [DATABASE.md](./DATABASE.md)
 
 ## 🌟 Features
 
 ### 🔐 Role-Based Access Control
 - **Admin Dashboard**: Complete student and exam management interface
-- **Student Profiles**: Personal progress tracking and exam history
-- **Secure Authentication**: Token-based admin access and ID-based student access
-- **Exam Attempt Management**: Assign and track individual exam sessions
-
-### 👨‍💼 Admin Features
-- **Student Management**: Create, edit, and delete student accounts
-- **Exam Assignment**: Assign multiple exam attempts per student
-- **Dashboard Analytics**: View completion rates and performance statistics
-- **Attempt Monitoring**: Track all exam attempts across the system
-- **Comprehensive Reporting**: Export and analyze student performance data
-
-### 👨‍🎓 Student Features
-- **Personal Dashboard**: View profile statistics and exam history
-- **Detailed Results**: Question-by-question analysis with explanations
-- **Progress Tracking**: Monitor improvement over multiple attempts
-- **PDF Reports**: Download comprehensive PDF reports of exam results
-- **Exam History Export**: Generate summary PDFs of all completed attempts
-- **Responsive Interface**: Optimized for desktop and mobile devices
-
-### 📝 Exam System
-- **Attempt-Based Security**: Each exam session tied to a unique attempt ID
-- **200+ Questions**: Comprehensive ReactJS question database
-- **Intelligent Randomization**: Server-side question selection and shuffling
-- **Time Management**: Configurable time limits with visual countdown
-- **Immediate Feedback**: Detailed explanations for all questions
-- **Progress Persistence**: Save and resume exam sessions
-- **PDF Generation**: Automatic PDF report generation for completed exams
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+ and npm
-- Git
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
    cd reactjs-exam-app
    ```
 
@@ -124,20 +151,42 @@ This application is configured for easy deployment to Render's free tier. Follow
 
 ## �️ Database
 
-### Persistent File-Based Storage
-The application now uses **LowDB**, a lightweight JSON database that provides data persistence across server restarts:
+### Multiple Database Options
+The application supports two database backends:
 
-- **Database File**: `backend/src/data/exam_database.json`
+#### 🗂️ LowDB (Default - File-Based)
+- **Database File**: `backend/src/data/quiz_database.json`
 - **Format**: Human-readable JSON
 - **Features**: Automatic initialization, backup functionality, async operations
 - **Benefits**: No database server required, easy development setup
+- **Best for**: Development, small deployments
+
+#### 🐘 PostgreSQL via Supabase
+- **Cloud Database**: Fully managed PostgreSQL
+- **Features**: Real-time updates, built-in auth, automatic backups
+- **Benefits**: Scalable, production-ready, advanced querying
+- **Best for**: Production deployments, multiple users
+
+### Configuration
+Switch between database types using environment variables:
+
+```bash
+# File-based storage (default)
+DATABASE_TYPE=lowdb
+
+# PostgreSQL via Supabase
+DATABASE_TYPE=supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
 
 ### Sample Data (Auto-Generated)
-The database initializes with sample data:
-- **3 Students**: John Doe, Jane Smith, Mike Johnson
-- **3 Exam Attempts**: One per student, all in "assigned" status
-- **Admin Token**: `admin_2025_reactjs_exam`
+Both database types initialize with sample data:
+- **4 Students**: John Doe, Jane Smith, Jan Erisse, Rashmi
+- **4 Exam Attempts**: One per student, all in "assigned" status
+- **Admin Token**: `admin_2025_reactjs_quiz`
 
+> 📖 **For Supabase setup guide**, see [SUPABASE_SETUP.md](./docs/SUPABASE_SETUP.md)  
 > 📖 **For detailed database documentation**, see [DATABASE.md](./DATABASE.md)
 
 ## �🔑 Access Identifiers

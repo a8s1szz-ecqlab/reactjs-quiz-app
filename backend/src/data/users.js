@@ -1,7 +1,14 @@
-const DatabaseOperations = require('./database');
+const DatabaseFactory = require('./factory');
 
 // Initialize database on module load
-DatabaseOperations.init().catch(console.error);
+let databaseInstance = null;
+
+const getDatabase = async () => {
+  if (!databaseInstance) {
+    databaseInstance = await DatabaseFactory.getDatabase();
+  }
+  return databaseInstance;
+};
 
 // Export database operations with compatibility layer for existing code
 module.exports = {
@@ -15,27 +22,72 @@ module.exports = {
     return [];
   },
   get ADMIN_TOKEN() {
-    return DatabaseOperations.getAdminToken();
+    return require('../config').ADMIN_TOKEN;
   },
 
   // User operations
-  createUser: DatabaseOperations.createUser,
-  findUserByStudentId: DatabaseOperations.findUserByStudentId,
-  findUserById: DatabaseOperations.findUserById,
-  getAllUsers: DatabaseOperations.getAllUsers,
-  updateUser: DatabaseOperations.updateUser,
-  deleteUser: DatabaseOperations.deleteUser,
-  hardDeleteUser: DatabaseOperations.hardDeleteUser,
+  createUser: async (...args) => {
+    const db = await getDatabase();
+    return db.createUser(...args);
+  },
+  findUserByStudentId: async (...args) => {
+    const db = await getDatabase();
+    return db.findUserByStudentId(...args);
+  },
+  findUserById: async (...args) => {
+    const db = await getDatabase();
+    return db.findUserById(...args);
+  },
+  getAllUsers: async (...args) => {
+    const db = await getDatabase();
+    return db.getAllUsers(...args);
+  },
+  updateUser: async (...args) => {
+    const db = await getDatabase();
+    return db.updateUser(...args);
+  },
+  deleteUser: async (...args) => {
+    const db = await getDatabase();
+    return db.deleteUser(...args);
+  },
+  hardDeleteUser: async (...args) => {
+    const db = await getDatabase();
+    return db.hardDeleteUser(...args);
+  },
 
   // Quiz attempt operations
-  createQuizAttempt: DatabaseOperations.createQuizAttempt,
-  findAttemptById: DatabaseOperations.findAttemptById,
-  getAttemptsByStudentId: DatabaseOperations.getAttemptsByStudentId,
-  getAllAttempts: DatabaseOperations.getAllAttempts,
-  updateAttempt: DatabaseOperations.updateAttempt,
-  deleteAttempt: DatabaseOperations.deleteAttempt,
+  createQuizAttempt: async (...args) => {
+    const db = await getDatabase();
+    return db.createQuizAttempt(...args);
+  },
+  findAttemptById: async (...args) => {
+    const db = await getDatabase();
+    return db.findAttemptById(...args);
+  },
+  getAttemptsByStudentId: async (...args) => {
+    const db = await getDatabase();
+    return db.getAttemptsByStudentId(...args);
+  },
+  getAllAttempts: async (...args) => {
+    const db = await getDatabase();
+    return db.getAllAttempts(...args);
+  },
+  updateAttempt: async (...args) => {
+    const db = await getDatabase();
+    return db.updateAttempt(...args);
+  },
+  deleteAttempt: async (...args) => {
+    const db = await getDatabase();
+    return db.deleteAttempt(...args);
+  },
 
   // Database maintenance
-  backup: DatabaseOperations.backup,
-  reset: DatabaseOperations.reset
+  backup: async (...args) => {
+    const db = await getDatabase();
+    return db.backup(...args);
+  },
+  reset: async (...args) => {
+    const db = await getDatabase();
+    return db.reset(...args);
+  }
 };

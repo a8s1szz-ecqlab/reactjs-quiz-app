@@ -104,7 +104,7 @@ const createSampleData = async () => {
       assignedAt: new Date().toISOString(),
       startedAt: null,
       completedAt: null,
-      timeLimit: 1200,
+      timeLimit: 960,
       questions: [],
       answers: [],
       results: null
@@ -118,7 +118,7 @@ const createSampleData = async () => {
       assignedAt: new Date().toISOString(),
       startedAt: null,
       completedAt: null,
-      timeLimit: 1200,
+      timeLimit: 960,
       questions: [],
       answers: [],
       results: null
