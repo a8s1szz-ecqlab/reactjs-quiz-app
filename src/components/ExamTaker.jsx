@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Exam from './Exam';
 import Results from './Results';
 import QuizApiService from '../services/api';
 import './ExamTaker.css';
 
-const ExamTaker = ({ attemptId, onExit }) => {
+const ExamTaker = () => {
+  const navigate = useNavigate();
+  const { attemptId } = useParams();
   const [currentView, setCurrentView] = useState('loading');
   const [attemptData, setAttemptData] = useState(null);
   const [examData, setExamData] = useState(null);
@@ -94,7 +97,7 @@ const ExamTaker = ({ attemptId, onExit }) => {
           <div className="error-icon">⚠️</div>
           <h2>Exam Not Available</h2>
           <p className="error-message">{error}</p>
-          <button onClick={onExit} className="primary-button">
+          <button onClick={() => navigate('/')} className="primary-button">
             Back to Home
           </button>
         </div>
@@ -110,32 +113,32 @@ const ExamTaker = ({ attemptId, onExit }) => {
           <h2>Exam Already Completed</h2>
           <p>You have already completed this exam attempt.</p>
           
-          {attemptData?.attempt && (
+          {attemptData && (
             <div className="attempt-info">
               <div className="info-card">
                 <h3>Attempt Details</h3>
                 <div className="info-row">
                   <span>Attempt ID:</span>
-                  <span>{attemptData.attempt.attemptId}</span>
+                  <span>{attemptData.attemptId}</span>
                 </div>
                 <div className="info-row">
                   <span>Student:</span>
-                  <span>{attemptData.student?.name}</span>
+                  <span>{attemptData.studentName}</span>
                 </div>
                 <div className="info-row">
                   <span>Completed:</span>
-                  <span>{new Date(attemptData.attempt.completedAt).toLocaleString()}</span>
+                  <span>{attemptData.completedAt ? new Date(attemptData.completedAt).toLocaleString() : 'Not completed'}</span>
                 </div>
               </div>
             </div>
           )}
           
           <div className="action-buttons">
-            <button onClick={onExit} className="primary-button">
+            <button onClick={() => navigate('/')} className="primary-button">
               Back to Home
             </button>
             <a 
-              href={`/?id=${attemptData?.student?.studentId}`} 
+              href={`/student/${attemptData?.studentId}`} 
               className="secondary-button"
             >
               View Profile
@@ -160,7 +163,7 @@ const ExamTaker = ({ attemptId, onExit }) => {
               <span>Time Limit: {formatTime(examData.timeLimit)}</span>
             </div>
           </div>
-          <button onClick={onExit} className="exit-button">
+          <button onClick={() => navigate('/')} className="exit-button">
             Exit Exam
           </button>
         </div>
@@ -182,9 +185,12 @@ const ExamTaker = ({ attemptId, onExit }) => {
         <Results
           results={results}
           onRetakeExam={handleRetakeExam}
-          onBackToHome={onExit}
+          onBackToHome={() => navigate('/')}
           showRetake={false} // Disable retake for attempt-based exams
-          studentInfo={attemptData?.student}
+          studentInfo={attemptData ? { 
+            studentId: attemptData.studentId, 
+            name: attemptData.studentName 
+          } : null}
           attemptId={attemptId}
         />
       </div>

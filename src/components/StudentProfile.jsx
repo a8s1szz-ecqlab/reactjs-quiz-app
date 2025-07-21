@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import QuizApiService from '../services/api';
 import PDFService from '../services/pdfService';
 import './StudentProfile.css';
 
-const StudentProfile = ({ studentId, onLogout }) => {
+const StudentProfile = () => {
+  const navigate = useNavigate();
+  const { studentId } = useParams();
   const [profile, setProfile] = useState(null);
   const [attempts, setAttempts] = useState([]);
   const [selectedAttempt, setSelectedAttempt] = useState(null);
@@ -155,7 +158,7 @@ const StudentProfile = ({ studentId, onLogout }) => {
       <div className="student-error">
         <h2>Error</h2>
         <p>{error}</p>
-        <button onClick={onLogout} className="primary-button">
+        <button onClick={() => navigate('/')} className="primary-button">
           Back to Login
         </button>
       </div>
@@ -170,7 +173,7 @@ const StudentProfile = ({ studentId, onLogout }) => {
             <h1>Student Profile</h1>
             <p>{profile?.student?.name}</p>
           </div>
-          <button onClick={onLogout} className="logout-button">
+          <button onClick={() => navigate('/')} className="logout-button">
             Logout
           </button>
         </div>
@@ -350,7 +353,7 @@ const StudentProfile = ({ studentId, onLogout }) => {
                         )}
                         {attempt.status === 'assigned' && (
                           <a 
-                            href={`/?id=${attempt.attemptId}`}
+                            href={`/exam/${attempt.attemptId}`}
                             className="action-button take-exam"
                           >
                             Take Exam

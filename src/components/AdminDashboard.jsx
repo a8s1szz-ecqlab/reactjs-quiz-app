@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import QuizApiService from '../services/api';
 import './AdminDashboard.css';
 
-const AdminDashboard = ({ adminToken, onLogout }) => {
+import config from '../config';
+
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+  // Use the config admin token directly
+  const [adminToken] = useState(() => {
+    const storedToken = localStorage.getItem('adminToken');
+    const token = storedToken || config.ADMIN_TOKEN;
+    console.log('AdminDashboard - Using admin token:', token ? 'Present' : 'Missing');
+    return token;
+  });
   const [activeTab, setActiveTab] = useState('dashboard');
   const [students, setStudents] = useState([]);
   const [examAttempts, setExamAttempts] = useState([]);
@@ -316,7 +327,10 @@ const AdminDashboard = ({ adminToken, onLogout }) => {
       <header className="admin-header">
         <div className="header-content">
           <h1>Admin Dashboard</h1>
-          <button onClick={onLogout} className="logout-button">
+          <button onClick={() => {
+            localStorage.removeItem('adminToken');
+            navigate('/');
+          }} className="logout-button">
             Logout
           </button>
         </div>

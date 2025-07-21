@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import QuizApiService from '../services/api';
+import config from '../config';
 import './LandingPage.css';
 
-const LandingPage = ({ onIdentifierSubmit }) => {
+const LandingPage = () => {
   const [identifier, setIdentifier] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +25,22 @@ const LandingPage = ({ onIdentifierSubmit }) => {
       const data = await QuizApiService.validateIdentifier(identifier.trim());
 
       if (data.success) {
-        onIdentifierSubmit(data.type, data.data);
+        // Navigate based on the type of identifier
+        switch (data.type) {
+          case 'admin':
+            // Store admin token and navigate to admin
+            localStorage.setItem('adminToken', config.ADMIN_TOKEN);
+            navigate('/admin');
+            break;
+          case 'student':
+            navigate(`/student/${data.data.studentId}`);
+            break;
+          case 'attempt':
+            navigate(`/exam/${data.data.attemptId}`);
+            break;
+          default:
+            setError('Unknown identifier type');
+        }
       } else {
         setError(data.message || 'Invalid identifier');
       }
