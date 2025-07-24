@@ -5,7 +5,7 @@ const config = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   
   // Authentication
-  ADMIN_TOKEN: process.env.ADMIN_TOKEN || 'admin_2025_reactjs_quiz',
+  ADMIN_TOKEN: process.env.ADMIN_TOKEN || 'admin_2025_programming_quiz',
   
   // Database configuration
   DATABASE_TYPE: process.env.DATABASE_TYPE || 'lowdb', // 'lowdb' or 'supabase'

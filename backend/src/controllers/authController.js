@@ -86,9 +86,9 @@ const getSystemInfo = async (req, res) => {
     res.json({
       success: true,
       data: {
-        appName: 'ReactJS Proficiency Quiz',
+        appName: 'Programming Proficiency Assessment',
         version: '2.0.0',
-        description: 'A comprehensive ReactJS proficiency assessment platform with role-based access',
+        description: 'A comprehensive multi-topic proficiency assessment platform with role-based access',
         supportedIdentifiers: [
           'Admin Token - Access admin dashboard',
           'Student ID - View profile and quiz results',

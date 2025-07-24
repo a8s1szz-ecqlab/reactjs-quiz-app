@@ -129,7 +129,11 @@ const StudentProfile = () => {
         studentId: profile.student.studentId
       };
       
-      await PDFService.generateStudentSummaryPDF(completedAttempts, studentInfo);
+      // For summary PDFs with multiple topics, use generic "Programming" title
+      const topicNames = [...new Set(completedAttempts.map(a => a.topicName).filter(Boolean))];
+      const topicName = topicNames.length === 1 ? topicNames[0] : 'Programming';
+      
+      await PDFService.generateStudentSummaryPDF(completedAttempts, studentInfo, topicName);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to generate PDF. Please try again.');
@@ -374,7 +378,7 @@ const StudentProfile = () => {
             <div className="results-overview">
               <div className="results-header">
                 <div className="emoji-display">{getPerformanceEmoji(attemptDetails.results.percentage)}</div>
-                <h1 className="results-title">ReactJS Assessment Complete!</h1>
+                <h1 className="results-title">{attemptDetails.topicName || 'Programming'} Assessment Complete!</h1>
                 <p className="results-message">{attemptDetails.results.proficiencyLevel?.message || 'Assessment completed'}</p>
               </div>
 
@@ -512,10 +516,10 @@ const StudentProfile = () => {
               <div className="motivational-section">
                 <div className="motivational-text">
                   {attemptDetails.results.percentage >= 80 
-                    ? "Excellent ReactJS knowledge! You're ready for advanced React projects! 🏆" 
+                    ? `Excellent ${attemptDetails.topicName || 'programming'} knowledge! You're ready for advanced projects! 🏆` 
                     : attemptDetails.results.percentage >= 60 
-                      ? "Good ReactJS foundation! Practice with more complex React patterns! ⚛️" 
-                      : "Keep learning ReactJS fundamentals! Check out the official React docs! 📚"
+                      ? `Good ${attemptDetails.topicName || 'programming'} foundation! Practice with more complex patterns! ⭐` 
+                      : `Keep learning ${attemptDetails.topicName || 'programming'} fundamentals! Practice makes perfect! 📚`
                   }
                 </div>
               </div>

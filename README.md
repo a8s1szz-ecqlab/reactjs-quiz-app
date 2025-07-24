@@ -1,8 +1,8 @@
-# ReactJS Proficiency Exam Application
+# Programming Proficiency Assessment Platform
 
-A comprehensive React.js exam application with **role-based access control** and **flexible database backends** (LowDB file-based or PostgreSQL via Supabase), designed to assess ReactJS proficiency through interactive exams with admin management and student tracking capabilities.
+A comprehensive multi-topic assessment application with **role-based access control** and **flexible database backends** (LowDB file-based or PostgreSQL via Supabase), designed to assess programming proficiency across multiple languages and technologies through interactive exams with admin management and student tracking capabilities.
 
-![Exam Application](https://img.shields.io/badge/React-18.2.0-blue) ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple) ![Node.js](https://img.shields.io/badge/Node.js-16+-green) ![Database](https://img.shields.io/badge/Database-LowDB%20%7C%20Supabase-orange) ![License](https://img.shields.io/badge/license-MIT-green) ![Deployment](https://img.shields.io/badge/Deploy-Render-brightgreen)
+![Assessment Platform](https://img.shields.io/badge/React-18.2.0-blue) ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple) ![Node.js](https://img.shields.io/badge/Node.js-16+-green) ![Database](https://img.shields.io/badge/Database-LowDB%20%7C%20Supabase-orange) ![License](https://img.shields.io/badge/license-MIT-green) ![Deployment](https://img.shields.io/badge/Deploy-Render-brightgreen)
 
 ## 📋 Table of Contents
 

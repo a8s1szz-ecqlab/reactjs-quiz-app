@@ -214,6 +214,16 @@
   min-width: 100%;
 }
 
+/* Actions column specific styles - ensure it's always visible */
+.attempts-table th:nth-child(9),
+.attempts-table td:nth-child(9) {
+  min-width: 100px !important;
+  width: 100px !important;
+  text-align: center !important;
+  padding: var(--space-2) !important;
+  white-space: nowrap !important;
+}
+
 .attempts-table thead tr {
   display: table-row; /* Ensure header row displays as a single row */
   white-space: nowrap; /* Prevent any wrapping */
@@ -359,21 +369,23 @@
 /* Specific column widths for exam attempts table */
 .attempts-table th:nth-child(1) { width: 12%; } /* Attempt ID */
 .attempts-table th:nth-child(2) { width: 15%; } /* Student */
-.attempts-table th:nth-child(3) { width: 10%; } /* Status */
-.attempts-table th:nth-child(4) { width: 15%; } /* Assigned */
-.attempts-table th:nth-child(5) { width: 15%; } /* Started */
-.attempts-table th:nth-child(6) { width: 15%; } /* Completed */
-.attempts-table th:nth-child(7) { width: 8%; }  /* Score */
-.attempts-table th:nth-child(8) { width: 10%; } /* Actions */
+.attempts-table th:nth-child(3) { width: 10%; } /* Topic */
+.attempts-table th:nth-child(4) { width: 10%; } /* Status */
+.attempts-table th:nth-child(5) { width: 12%; } /* Assigned */
+.attempts-table th:nth-child(6) { width: 12%; } /* Started */
+.attempts-table th:nth-child(7) { width: 12%; } /* Completed */
+.attempts-table th:nth-child(8) { width: 8%; }  /* Score */
+.attempts-table th:nth-child(9) { width: 9%; }  /* Actions */
 
 .attempts-table td:nth-child(1) { width: 12%; }
 .attempts-table td:nth-child(2) { width: 15%; }
 .attempts-table td:nth-child(3) { width: 10%; }
-.attempts-table td:nth-child(4) { width: 15%; }
-.attempts-table td:nth-child(5) { width: 15%; }
-.attempts-table td:nth-child(6) { width: 15%; }
-.attempts-table td:nth-child(7) { width: 8%; }
-.attempts-table td:nth-child(8) { width: 10%; }
+.attempts-table td:nth-child(4) { width: 10%; }
+.attempts-table td:nth-child(5) { width: 12%; }
+.attempts-table td:nth-child(6) { width: 12%; }
+.attempts-table td:nth-child(7) { width: 12%; }
+.attempts-table td:nth-child(8) { width: 8%; }
+.attempts-table td:nth-child(9) { width: 9%; }
 
 .students-table tbody tr:hover,
 .attempts-table tbody tr:hover {
@@ -456,10 +468,34 @@
   align-items: center;
   gap: var(--space-1);
   min-height: 32px;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .danger-button:hover {
   background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Specific styling for delete button in attempts table */
+.attempts-table .delete-btn {
+  background: #ef4444 !important;
+  color: white !important;
+  border: none !important;
+  padding: 6px 12px !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-width: 80px;
+  text-align: center;
+}
+
+.attempts-table .delete-btn:hover {
+  background: #dc2626 !important;
   transform: translateY(-1px);
 }
 
@@ -843,7 +879,7 @@
   
   .students-table table,
   .attempts-table table {
-    min-width: 800px; /* Increased minimum width for attempts table */
+    min-width: 900px; /* Increased minimum width for attempts table to accommodate Actions column */
   }
 
   /* Force single row for exam attempts headers on mobile */
@@ -1022,4 +1058,85 @@
     font-size: var(--font-size-sm);
     min-height: 42px;
   }
+}
+
+/* Topic Selection Styles */
+.topic-selection {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.topic-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background-color: var(--surface);
+}
+
+.topic-option:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.topic-option.selected {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.topic-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.topic-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.topic-info strong {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+}
+
+.topic-info small {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+@media (min-width: 640px) {
+  .topic-selection {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Topic Badge Styles */
+.topic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--primary-light);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+}
+
+.topic-badge .topic-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.topic-badge .topic-name {
+  font-weight: 500;
+  color: var(--primary);
 }

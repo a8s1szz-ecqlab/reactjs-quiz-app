@@ -56,9 +56,9 @@ const LandingPage = () => {
     <div className="landing-page">
       <div className="landing-container">
         <div className="landing-header">
-          <h1>ReactJS Proficiency Exam</h1>
+          <h1>Programming Proficiency Exam</h1>
           <p className="landing-subtitle">
-            A comprehensive ReactJS proficiency assessment platform
+            A comprehensive programming proficiency assessment platform
           </p>
         </div>
 
@@ -120,7 +120,7 @@ const LandingPage = () => {
 
         <div className="landing-footer">
           <p>
-            Built with React.js • Designed for proficiency assessment
+            Multi-Topic Assessment Platform • Built with React.js
           </p>
         </div>
       </div>

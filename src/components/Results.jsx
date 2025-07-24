@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PDFService from '../services/pdfService';
 import './Results.css';
 
-const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, studentInfo = null, attemptId = null }) => {
+const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, studentInfo = null, attemptId = null, topicName = 'Programming' }) => {
   // Handle cases where results might be incomplete or missing
   if (!results) {
     return (
@@ -101,7 +101,7 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
         completedAt
       };
       
-      await PDFService.generateExamResultsPDF(resultData, studentInfo);
+      await PDFService.generateExamResultsPDF(resultData, studentInfo, topicName);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to generate PDF. Please try again.');
@@ -141,7 +141,7 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
         
         <div className="results-header">
           <div className="emoji-display">{getPerformanceEmoji()}</div>
-          <h1 className="results-title">ReactJS Assessment Complete!</h1>
+          <h1 className="results-title">{topicName} Assessment Complete!</h1>
           <p className="results-message">{gradeInfo.message}</p>
         </div>
 
@@ -201,7 +201,7 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
           {showRetake ? (
             <button className="restart-button" onClick={onRestartExam}>
               <span className="button-icon">🔄</span>
-              Retake ReactJS Exam
+              Retake {topicName} Exam
             </button>
           ) : (
             <button className="logout-button" onClick={onBackToHome}>
@@ -270,10 +270,10 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
         <div className="motivational-section">
           <div className="motivational-text">
             {percentage >= 80 
-              ? "Excellent ReactJS knowledge! You're ready for advanced React projects!" 
+              ? `Excellent ${topicName} knowledge! You're ready for advanced ${topicName} projects!` 
               : percentage >= 60 
-                ? "Good ReactJS foundation! Practice with more complex React patterns!" 
-                : "Keep learning ReactJS fundamentals! Check out the official React docs!"
+                ? `Good ${topicName} foundation! Practice with more complex ${topicName} patterns!` 
+                : `Keep learning ${topicName} fundamentals! Check out the official ${topicName} documentation!`
             }
           </div>
         </div>

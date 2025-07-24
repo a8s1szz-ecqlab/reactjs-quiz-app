@@ -72,7 +72,9 @@ const startQuiz = async (req, res) => {
     let startedAt = attempt.startedAt;
     
     if (!questions || questions.length === 0) {
-      questions = getQuizQuestions(50);
+      // Use topic-specific questions if available, otherwise default to all questions
+      const topic = attempt.topic || 'reactjs';
+      questions = getQuizQuestions(50, topic);
       startedAt = new Date().toISOString();
       
       // Update attempt with questions and start time
@@ -189,8 +191,8 @@ const submitQuiz = async (req, res) => {
       // Time exceeded - force submission but mark as overtime
       console.log(`Time limit exceeded for attempt ${attemptId}. Actual: ${actualTimeElapsed}s, Limit: ${timeLimit}s`);
       
-      const validationResults = validateAnswers(answers);
-      const proficiencyLevel = getProficiencyLevel(validationResults.percentage);
+      const validationResults = validateAnswers(answers, attempt.topic);
+      const proficiencyLevel = getProficiencyLevel(validationResults.percentage, attempt.topicName);
 
       const results = {
         score: validationResults.score,
@@ -226,8 +228,8 @@ const submitQuiz = async (req, res) => {
     }
 
     // Normal submission within time limit
-    const validationResults = validateAnswers(answers);
-    const proficiencyLevel = getProficiencyLevel(validationResults.percentage);
+    const validationResults = validateAnswers(answers, attempt.topic);
+    const proficiencyLevel = getProficiencyLevel(validationResults.percentage, attempt.topicName);
     
     // Use server-calculated time instead of client-reported time
     const serverTimeTaken = Math.min(actualTimeElapsed, timeLimit);

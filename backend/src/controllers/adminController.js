@@ -251,12 +251,21 @@ const hardDeleteStudent = async (req, res) => {
 // Assign quiz attempt to student
 const assignQuizAttempt = async (req, res) => {
   try {
-    const { studentId } = req.body;
+    const { studentId, topic = 'reactjs' } = req.body;
     
     if (!studentId) {
       return res.status(400).json({
         success: false,
         message: 'Student ID is required'
+      });
+    }
+
+    // Validate topic
+    const { getTopicById, AVAILABLE_TOPICS } = require('../data/questions');
+    if (topic && !AVAILABLE_TOPICS.includes(topic)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid topic. Available topics: ${AVAILABLE_TOPICS.join(', ')}`
       });
     }
 
@@ -268,11 +277,11 @@ const assignQuizAttempt = async (req, res) => {
       });
     }
 
-    const attempt = await createQuizAttempt(studentId, 'admin');
+    const attempt = await createQuizAttempt(studentId, 'admin', topic);
     
     res.status(201).json({
       success: true,
-      message: 'Quiz attempt assigned successfully',
+      message: `${attempt.topicName || 'Quiz'} attempt assigned successfully`,
       data: attempt
     });
   } catch (error) {

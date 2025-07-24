@@ -30,6 +30,18 @@ const AdminDashboard = () => {
     studentId: ''
   });
 
+  // Topic assignment state
+  const [showTopicDialog, setShowTopicDialog] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [selectedTopic, setSelectedTopic] = useState('reactjs');
+  
+  // Available topics
+  const availableTopics = [
+    { id: 'reactjs', name: 'ReactJS', icon: '⚛️', description: 'React JavaScript Library' },
+    { id: 'microservice', name: 'Microservice', icon: '�', description: 'Microservice Architecture' },
+    { id: 'sap-commerce-cloud', name: 'SAP Commerce Cloud', icon: '�', description: 'SAP Commerce Cloud Platform' }
+  ];
+
   // Confirmation dialog state
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -209,10 +221,21 @@ const AdminDashboard = () => {
   };
 
   const handleAssignExam = async (studentId) => {
+    setSelectedStudentId(studentId);
+    setSelectedTopic('reactjs'); // Default to ReactJS
+    setShowTopicDialog(true);
+  };
+
+  const handleTopicAssignment = async () => {
     try {
-      await QuizApiService.assignQuizAttempt(adminToken, { studentId });
+      await QuizApiService.assignQuizAttempt(adminToken, { 
+        studentId: selectedStudentId,
+        topic: selectedTopic 
+      });
       await loadExamAttempts();
       await loadDashboardStats();
+      setShowTopicDialog(false);
+      setSelectedStudentId(null);
     } catch (error) {
       setError(error.message);
     }
@@ -540,6 +563,14 @@ const AdminDashboard = () => {
                     </th>
                     <th 
                       className="sortable-header" 
+                      onClick={() => handleSort('topic')}
+                      title="Click to sort by Topic"
+                    >
+                      <span className="header-text">Topic</span>
+                      {getSortIcon('topic')}
+                    </th>
+                    <th 
+                      className="sortable-header" 
                       onClick={() => handleSort('status')}
                       title="Click to sort by Status"
                     >
@@ -586,6 +617,16 @@ const AdminDashboard = () => {
                     <tr key={attempt.id}>
                       <td>{attempt.attemptId}</td>
                       <td>{attempt.studentName}</td>
+                      <td>
+                        <div className="topic-badge">
+                          <span className="topic-icon">
+                            {availableTopics.find(t => t.id === attempt.topic)?.icon || '⚛️'}
+                          </span>
+                          <span className="topic-name">
+                            {availableTopics.find(t => t.id === attempt.topic)?.name || attempt.topicName || 'Programming'}
+                          </span>
+                        </div>
+                      </td>
                       <td>{getStatusBadge(attempt.status)}</td>
                       <td>{formatDate(attempt.assignedAt)}</td>
                       <td>{attempt.startedAt ? formatDate(attempt.startedAt) : '-'}</td>
@@ -595,8 +636,12 @@ const AdminDashboard = () => {
                           `${attempt.results.score}/${attempt.results.totalQuestions}` : '-'}
                       </td>
                       <td>
-                        <button onClick={() => handleDeleteExamAttempt(attempt.attemptId)} className="danger-button delete-btn">
-                          Delete Attempt
+                        <button 
+                          onClick={() => handleDeleteExamAttempt(attempt.attemptId)} 
+                          className="danger-button delete-btn"
+                          title="Delete this exam attempt"
+                        >
+                          Delete
                         </button>
                       </td>
                     </tr>
@@ -607,6 +652,41 @@ const AdminDashboard = () => {
           </div>
         )}
       </main>
+
+      {/* Topic Selection Dialog */}
+      {showTopicDialog && (
+        <div className="modal-overlay">
+          <div className="form-modal">
+            <h3>Assign Exam Topic</h3>
+            <div className="form-group">
+              <label>Select Topic for Exam:</label>
+              <div className="topic-selection">
+                {availableTopics.map(topic => (
+                  <div 
+                    key={topic.id} 
+                    className={`topic-option ${selectedTopic === topic.id ? 'selected' : ''}`}
+                    onClick={() => setSelectedTopic(topic.id)}
+                  >
+                    <span className="topic-icon">{topic.icon}</span>
+                    <div className="topic-info">
+                      <strong>{topic.name}</strong>
+                      <small>{topic.description}</small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="form-actions">
+              <button type="button" onClick={() => setShowTopicDialog(false)}>
+                Cancel
+              </button>
+              <button className="primary-button" onClick={handleTopicAssignment}>
+                Assign {availableTopics.find(t => t.id === selectedTopic)?.name} Exam
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confirmation Dialog */}
       {showConfirmDialog && (

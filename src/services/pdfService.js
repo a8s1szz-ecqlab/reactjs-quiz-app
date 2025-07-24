@@ -5,9 +5,10 @@ class PDFService {
    * Generate a PDF report for exam results
    * @param {Object} resultData - The exam result data
    * @param {Object} studentInfo - Student information (optional)
+   * @param {string} topicName - The topic name for the exam (default: 'Programming')
    * @returns {Promise<void>} - Downloads the PDF
    */
-  static async generateExamResultsPDF(resultData, studentInfo = null) {
+  static async generateExamResultsPDF(resultData, studentInfo = null, topicName = 'Programming') {
     const {
       score,
       totalQuestions,
@@ -53,7 +54,7 @@ class PDFService {
     // Header
     pdf.setFontSize(20);
     pdf.setTextColor(...primaryColor);
-    pdf.text('ReactJS Exam Results', margin, yPosition);
+    pdf.text(`${topicName} Exam Results`, margin, yPosition);
     yPosition += 15;
 
     // Subtitle with date
@@ -238,11 +239,11 @@ class PDFService {
     pdf.setTextColor(...textColor);
     let motivationalText;
     if (percentage >= 80) {
-      motivationalText = "Excellent ReactJS knowledge! You're ready for advanced React projects!";
+      motivationalText = `Excellent ${topicName} knowledge! You're ready for advanced ${topicName} projects!`;
     } else if (percentage >= 60) {
-      motivationalText = "Good ReactJS foundation! Practice with more complex React patterns!";
+      motivationalText = `Good ${topicName} foundation! Practice with more complex ${topicName} patterns!`;
     } else {
-      motivationalText = "Keep learning ReactJS fundamentals! Check out the official React docs!";
+      motivationalText = `Keep learning ${topicName} fundamentals! Check out the official ${topicName} documentation!`;
     }
     
     const motivationalLines = pdf.splitTextToSize(motivationalText, contentWidth);
@@ -254,7 +255,7 @@ class PDFService {
     // Generate filename
     const timestamp = new Date().toISOString().split('T')[0];
     const studentPrefix = studentInfo?.studentId || 'student';
-    const filename = `ReactJS_Exam_Results_${studentPrefix}_${timestamp}.pdf`;
+    const filename = `${topicName}_Exam_Results_${studentPrefix}_${timestamp}.pdf`;
 
     // Download the PDF
     pdf.save(filename);
@@ -264,8 +265,9 @@ class PDFService {
    * Generate a summary PDF for multiple exam attempts
    * @param {Array} attempts - Array of exam attempts
    * @param {Object} studentInfo - Student information
+   * @param {string} topicName - The topic name for the exam (default: 'Programming')
    */
-  static async generateStudentSummaryPDF(attempts, studentInfo) {
+  static async generateStudentSummaryPDF(attempts, studentInfo, topicName = 'Programming') {
     const pdf = new jsPDF();
     const primaryColor = [41, 128, 185];
     const textColor = [52, 73, 94];
@@ -277,7 +279,7 @@ class PDFService {
     // Header
     pdf.setFontSize(20);
     pdf.setTextColor(...primaryColor);
-    pdf.text('ReactJS Exam Performance Summary', margin, yPosition);
+    pdf.text(`${topicName} Exam Performance Summary`, margin, yPosition);
     yPosition += 20;
 
     // Student info
@@ -323,7 +325,7 @@ class PDFService {
       });
     }
 
-    const filename = `ReactJS_Exam_Summary_${studentInfo.studentId}_${new Date().toISOString().split('T')[0]}.pdf`;
+    const filename = `${topicName}_Exam_Summary_${studentInfo.studentId}_${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(filename);
   }
 }

@@ -193,6 +193,7 @@ function ResultsRoute() {
       results={results}
       onBackToHome={() => navigate('/')}
       attemptId={attemptId}
+      topicName={results.attempt?.topicName || 'Programming'}
     />
   )
 }

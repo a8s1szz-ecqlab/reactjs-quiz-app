@@ -41,8 +41,47 @@ class SupabaseAdapter {
       console.error('Error creating users table:', usersError);
     }
 
-    // Create quiz_attempts table
-    const { error: attemptsError } = await this.supabase.rpc('create_quiz_attempts_table_if_not_exists', {});
+    // Create quiz_attempts table with topic support
+    const createAttemptsTableSQL = `
+      CREATE TABLE IF NOT EXISTS quiz_attempts (
+        id SERIAL PRIMARY KEY,
+        attempt_id VARCHAR(50) UNIQUE NOT NULL,
+        student_id VARCHAR(50) NOT NULL,
+        assigned_by VARCHAR(50) DEFAULT 'admin',
+        topic VARCHAR(50) DEFAULT 'reactjs',
+        topic_name VARCHAR(100) DEFAULT 'ReactJS',
+        status VARCHAR(20) DEFAULT 'assigned',
+        assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        started_at TIMESTAMP,
+        completed_at TIMESTAMP,
+        time_limit INTEGER DEFAULT 3600,
+        passing_score INTEGER DEFAULT 70,
+        questions JSONB DEFAULT '[]',
+        answers JSONB DEFAULT '[]',
+        results JSONB,
+        time_taken INTEGER,
+        time_exceeded BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      -- Add indexes for better performance
+      CREATE INDEX IF NOT EXISTS idx_quiz_attempts_student_id ON quiz_attempts(student_id);
+      CREATE INDEX IF NOT EXISTS idx_quiz_attempts_status ON quiz_attempts(status);
+      CREATE INDEX IF NOT EXISTS idx_quiz_attempts_topic ON quiz_attempts(topic);
+      CREATE INDEX IF NOT EXISTS idx_quiz_attempts_student_topic ON quiz_attempts(student_id, topic);
+      
+      -- Add constraints
+      ALTER TABLE quiz_attempts 
+      ADD CONSTRAINT IF NOT EXISTS chk_topic_values 
+      CHECK (topic IN ('reactjs', 'microservice', 'sap-commerce-cloud'));
+      
+      ALTER TABLE quiz_attempts 
+      ADD CONSTRAINT IF NOT EXISTS chk_passing_score_range 
+      CHECK (passing_score >= 0 AND passing_score <= 100);
+    `;
+
+    const { error: attemptsError } = await this.supabase.rpc('exec_sql', { sql: createAttemptsTableSQL });
     if (attemptsError && !attemptsError.message.includes('already exists')) {
       console.error('Error creating quiz_attempts table:', attemptsError);
     }
@@ -101,14 +140,17 @@ class SupabaseAdapter {
       console.error('Error inserting sample users:', usersError);
     }
 
-    // Create sample quiz attempts
+    // Create sample quiz attempts with topic information
     const sampleAttempts = [
       {
         attempt_id: "ATT1079001",
         student_id: "STUD0001",
         assigned_by: "admin",
+        topic: "reactjs",
+        topic_name: "ReactJS",
         status: "assigned",
-        time_limit: 960,
+        time_limit: 3600,
+        passing_score: 70,
         questions: [],
         answers: [],
         results: null
@@ -117,8 +159,11 @@ class SupabaseAdapter {
         attempt_id: "ATT1079002",
         student_id: "STUD0002",
         assigned_by: "admin",
+        topic: "microservice",
+        topic_name: "Microservice",
         status: "assigned",
-        time_limit: 960,
+        time_limit: 3600,
+        passing_score: 75,
         questions: [],
         answers: [],
         results: null
@@ -127,18 +172,11 @@ class SupabaseAdapter {
         attempt_id: "ATT1079003",
         student_id: "RJSPE01819332",
         assigned_by: "admin",
+        topic: "sap-commerce-cloud",
+        topic_name: "SAP Commerce Cloud",
         status: "assigned",
-        time_limit: 960,
-        questions: [],
-        answers: [],
-        results: null
-      },
-      {
-        attempt_id: "ATT1079004",
-        student_id: "RJSPE02029879",
-        assigned_by: "admin",
-        status: "assigned",
-        time_limit: 960,
+        time_limit: 4200,
+        passing_score: 80,
         questions: [],
         answers: [],
         results: null
@@ -309,7 +347,7 @@ class SupabaseAdapter {
   }
 
   // Quiz attempt operations
-  async createQuizAttempt(studentId, assignedBy = 'admin') {
+  async createQuizAttempt(studentId, assignedBy = 'admin', topic = 'reactjs') {
     const { data: metadata } = await this.supabase
       .from('metadata')
       .select('value')
@@ -319,12 +357,19 @@ class SupabaseAdapter {
     const nextId = parseInt(metadata?.value || '1');
     const attemptId = `ATT1079${String(nextId).padStart(3, '0')}`;
 
+    // Get topic information for time limit and other settings
+    const { getTopicById, DEFAULT_TOPIC } = require('./questions');
+    const topicData = getTopicById(topic) || getTopicById(DEFAULT_TOPIC);
+
     const attemptData = {
       attempt_id: attemptId,
       student_id: studentId,
       assigned_by: assignedBy,
+      topic: topic,
+      topic_name: topicData?.name || 'Programming',
       status: 'assigned',
-      time_limit: 960,
+      time_limit: topicData?.timeLimit || 3600,
+      passing_score: topicData?.passingScore || 70,
       questions: [],
       answers: [],
       results: null
@@ -480,11 +525,14 @@ class SupabaseAdapter {
       attemptId: dbAttempt.attempt_id,
       studentId: dbAttempt.student_id,
       assignedBy: dbAttempt.assigned_by,
+      topic: dbAttempt.topic,
+      topicName: dbAttempt.topic_name,
       status: dbAttempt.status,
       assignedAt: dbAttempt.assigned_at || dbAttempt.created_at,
       startedAt: dbAttempt.started_at,
       completedAt: dbAttempt.completed_at,
       timeLimit: dbAttempt.time_limit,
+      passingScore: dbAttempt.passing_score,
       questions: dbAttempt.questions || [],
       answers: dbAttempt.answers || [],
       results: dbAttempt.results,
@@ -496,9 +544,12 @@ class SupabaseAdapter {
   transformAttemptToDb(appAttempt) {
     const dbAttempt = {};
     if (appAttempt.status !== undefined) dbAttempt.status = appAttempt.status;
+    if (appAttempt.topic !== undefined) dbAttempt.topic = appAttempt.topic;
+    if (appAttempt.topicName !== undefined) dbAttempt.topic_name = appAttempt.topicName;
     if (appAttempt.startedAt !== undefined) dbAttempt.started_at = appAttempt.startedAt;
     if (appAttempt.completedAt !== undefined) dbAttempt.completed_at = appAttempt.completedAt;
     if (appAttempt.timeLimit !== undefined) dbAttempt.time_limit = appAttempt.timeLimit;
+    if (appAttempt.passingScore !== undefined) dbAttempt.passing_score = appAttempt.passingScore;
     if (appAttempt.questions !== undefined) dbAttempt.questions = appAttempt.questions;
     if (appAttempt.answers !== undefined) dbAttempt.answers = appAttempt.answers;
     if (appAttempt.results !== undefined) dbAttempt.results = appAttempt.results;

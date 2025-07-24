@@ -240,20 +240,27 @@ class LowDBAdapter {
   }
 
   // Quiz attempt operations
-  async createQuizAttempt(studentId, assignedBy = 'admin') {
+  async createQuizAttempt(studentId, assignedBy = 'admin', topic = 'reactjs') {
     await this.db.read();
     const id = this.db.data.metadata.nextAttemptId++;
+    
+    // Get topic information for time limit and other settings
+    const { getTopicById, DEFAULT_TOPIC } = require('./questions');
+    const topicData = getTopicById(topic) || getTopicById(DEFAULT_TOPIC);
     
     const attempt = {
       id,
       attemptId: `ATT1079${String(id).padStart(3, '0')}`,
       studentId,
       assignedBy,
+      topic: topic,
+      topicName: topicData?.name || 'Programming',
       status: 'assigned',
       assignedAt: new Date().toISOString(),
       startedAt: null,
       completedAt: null,
-      timeLimit: 960,
+      timeLimit: topicData?.timeLimit || 3600,
+      passingScore: topicData?.passingScore || 70,
       questions: [],
       answers: [],
       results: null

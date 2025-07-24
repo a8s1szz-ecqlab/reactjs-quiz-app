@@ -142,7 +142,8 @@ const getQuizAttemptResults = async (req, res) => {
           assignedAt: attempt.assignedAt,
           startedAt: attempt.startedAt,
           completedAt: attempt.completedAt,
-          timeLimit: attempt.timeLimit
+          timeLimit: attempt.timeLimit,
+          topicName: attempt.topicName
         },
         student: student ? {
           studentId: student.studentId,

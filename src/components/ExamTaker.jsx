@@ -154,13 +154,19 @@ const ExamTaker = () => {
       <div className="exam-taker-active">
         <div className="exam-header">
           <div className="exam-info">
-            <h1>ReactJS Proficiency Exam</h1>
+            <h1>{attemptData?.attempt?.topicName || 'Programming'} Proficiency Exam</h1>
             <div className="exam-details">
               <span>Attempt ID: {examData.attemptId}</span>
               <span>•</span>
               <span>{examData.totalQuestions} Questions</span>
               <span>•</span>
               <span>Time Limit: {formatTime(examData.timeLimit)}</span>
+              {attemptData?.attempt?.topic && (
+                <>
+                  <span>•</span>
+                  <span>Topic: {attemptData.attempt.topic.toUpperCase()}</span>
+                </>
+              )}
             </div>
           </div>
           <button onClick={() => navigate('/')} className="exit-button">
@@ -192,6 +198,7 @@ const ExamTaker = () => {
             name: attemptData.studentName 
           } : null}
           attemptId={attemptId}
+          topicName={attemptData?.attempt?.topicName || 'Programming'}
         />
       </div>
     );
