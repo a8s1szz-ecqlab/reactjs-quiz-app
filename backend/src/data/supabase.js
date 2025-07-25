@@ -359,7 +359,16 @@ class SupabaseAdapter {
 
     // Get topic information for time limit and other settings
     const { getTopicById, DEFAULT_TOPIC } = require('./questions');
-    const topicData = getTopicById(topic) || getTopicById(DEFAULT_TOPIC);
+    let topicData;
+    try {
+      topicData = await getTopicById(topic);
+      if (!topicData) {
+        topicData = await getTopicById(DEFAULT_TOPIC);
+      }
+    } catch (error) {
+      console.warn(`Failed to fetch topic data for ${topic}, using default:`, error.message);
+      topicData = await getTopicById(DEFAULT_TOPIC);
+    }
 
     const attemptData = {
       attempt_id: attemptId,
