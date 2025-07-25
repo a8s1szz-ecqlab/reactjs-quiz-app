@@ -356,12 +356,12 @@ const StudentProfile = () => {
                           </>
                         )}
                         {attempt.status === 'assigned' && (
-                          <a 
-                            href={`/exam/${attempt.attemptId}`}
+                          <button 
+                            onClick={() => navigate(`/exam/${attempt.attemptId}`)}
                             className="action-button take-exam"
                           >
                             Take Exam
-                          </a>
+                          </button>
                         )}
                       </td>
                     </tr>
