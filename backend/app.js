@@ -1,5 +1,5 @@
 // Load environment variables
-require('dotenv').config();
+require('dotenv').config({ path: __dirname + '/.env' });
 
 const DatabaseOperations = require('./src/data/database');
 
