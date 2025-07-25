@@ -43,13 +43,11 @@ const checkTopicHealth = async (req, res) => {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           healthData.checks.remoteService = {
             status: 'healthy',
-            baseUrl: config.remote.baseUrl,
             httpStatus: response.statusCode
           };
         } else {
           healthData.checks.remoteService = {
             status: 'unhealthy',
-            baseUrl: config.remote.baseUrl,
             httpStatus: response.statusCode,
             error: `HTTP ${response.statusCode}`
           };
@@ -58,7 +56,6 @@ const checkTopicHealth = async (req, res) => {
       } catch (error) {
         healthData.checks.remoteService = {
           status: 'unhealthy',
-          baseUrl: config.remote.baseUrl,
           error: error.message,
           fallbackAvailable: config.remote.fallbackToLocal
         };
