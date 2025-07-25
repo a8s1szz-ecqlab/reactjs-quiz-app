@@ -1,14 +1,17 @@
 // Import topic-based questions and utilities directly from topics directory
 const { 
-  quizTopics, 
-  getTopicById, 
-  getQuestionsByTopic, 
+  localTopics, 
+  getTopic, 
+  getTopicQuestions, 
   getRandomQuestions: getRandomQuestionsFromTopic,
   AVAILABLE_TOPICS 
 } = require('./topics/index');
 
+// Constants
+const DEFAULT_TOPIC = 'reactjs'; // Default fallback topic
+
 // Backward compatibility - export ReactJS questions as default
-const quizData = quizTopics.reactjs.questions;
+const quizData = localTopics.reactjs ? localTopics.reactjs.questions : [];
 
 // Enhanced getRandomQuestions function that supports topic selection
 const getRandomQuestions = (sourceData, count = 50) => {
@@ -33,10 +36,11 @@ module.exports = {
   getRandomQuestions,
   
   // New topic-based exports
-  quizTopics,
-  getTopicById,
-  getTopicQuestions: getQuestionsByTopic, // Alias for consistency
+  quizTopics: localTopics, // Alias for backward compatibility
+  getTopicById: getTopic,
+  getTopicQuestions: getTopicQuestions,
   AVAILABLE_TOPICS,
+  DEFAULT_TOPIC, // Export the default topic constant
   
   // Topic-aware random questions function
   getRandomQuestionsFromTopic

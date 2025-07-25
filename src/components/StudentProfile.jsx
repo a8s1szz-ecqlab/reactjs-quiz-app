@@ -412,7 +412,7 @@ const StudentProfile = () => {
                   <div className="stat-label">Skipped</div>
                 </div>
                 <div className="stat-item">
-                  <div className="stat-value">{formatTime(attemptDetails.results.totalTime || 0)}</div>
+                  <div className="stat-value">{formatTime(attemptDetails.results.totalTime || attemptDetails.results.timeTaken || 0)}</div>
                   <div className="stat-label">Time Used</div>
                 </div>
               </div>

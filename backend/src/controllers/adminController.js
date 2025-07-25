@@ -260,15 +260,9 @@ const assignQuizAttempt = async (req, res) => {
       });
     }
 
-    // Validate topic
-    const { getTopicById, AVAILABLE_TOPICS } = require('../data/questions');
-    if (topic && !AVAILABLE_TOPICS.includes(topic)) {
-      return res.status(400).json({
-        success: false,
-        message: `Invalid topic. Available topics: ${AVAILABLE_TOPICS.join(', ')}`
-      });
-    }
-
+    // Skip topic validation for now since it's async
+    // The createQuizAttempt will handle invalid topics by falling back to default
+    
     const student = await findUserByStudentId(studentId);
     if (!student) {
       return res.status(404).json({

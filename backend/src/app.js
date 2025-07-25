@@ -7,6 +7,7 @@ const quizRoutes = require('./routes/quiz');
 const adminRoutes = require('./routes/admin');
 const studentRoutes = require('./routes/student');
 const authRoutes = require('./routes/auth');
+const healthRoutes = require('./routes/health');
 
 const app = express();
 
@@ -83,6 +84,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/quiz', quizRoutes);
+app.use('/api/health', healthRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

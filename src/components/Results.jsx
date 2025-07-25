@@ -28,6 +28,7 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
     percentage = 0, 
     proficiencyLevel, 
     totalTime = 0, 
+    timeTaken = 0, // Backward compatibility
     timeLeft = 0, 
     incorrectAnswers = [], 
     skippedCount = 0,
@@ -40,10 +41,17 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
     autoSubmitted
   } = results;
   
+  // Use totalTime if available, otherwise fall back to timeTaken
+  const actualTimeUsed = totalTime || timeTaken || 0;
+  
   // Debug logging
   console.log('Results component received:', {
     score,
     totalQuestions,
+    totalTime,
+    timeTaken,
+    actualTimeUsed,
+    timeLeft,
     incorrectAnswersCount: incorrectAnswers.length,
     skippedCount,
     detailedResultsCount: detailedResults.length,
@@ -93,7 +101,7 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
         totalQuestions,
         percentage,
         proficiencyLevel,
-        totalTime,
+        totalTime: actualTimeUsed,
         incorrectAnswers,
         skippedCount,
         detailedResults,
@@ -175,7 +183,7 @@ const Results = ({ results, onBackToHome, onRestartExam, showRetake = true, stud
             <div className="stat-label">Skipped</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">{formatTime(totalTime || 0)}</div>
+            <div className="stat-value">{formatTime(actualTimeUsed)}</div>
             <div className="stat-label">Time Used</div>
           </div>
         </div>

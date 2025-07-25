@@ -2,14 +2,19 @@ const { ADMIN_TOKEN, findUserByStudentId, findAttemptById } = require('../data/u
 
 // Middleware to authenticate admin token
 const authenticateAdmin = (req, res, next) => {
-  const token = req.headers.authorization || req.body.token || req.query.token;
+  const authHeader = req.headers.authorization || req.body.token || req.query.token;
   
-  if (!token) {
+  if (!authHeader) {
     return res.status(401).json({
       success: false,
       message: 'Admin token is required'
     });
   }
+  
+  // Extract token from "Bearer TOKEN" format
+  const token = authHeader.startsWith('Bearer ') 
+    ? authHeader.substring(7) 
+    : authHeader;
   
   if (token !== ADMIN_TOKEN) {
     return res.status(403).json({

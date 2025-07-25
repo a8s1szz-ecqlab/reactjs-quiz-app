@@ -38,8 +38,8 @@ const AdminDashboard = () => {
   // Available topics
   const availableTopics = [
     { id: 'reactjs', name: 'ReactJS', icon: '⚛️', description: 'React JavaScript Library' },
-    { id: 'microservice', name: 'Microservice', icon: '�', description: 'Microservice Architecture' },
-    { id: 'sap-commerce-cloud', name: 'SAP Commerce Cloud', icon: '�', description: 'SAP Commerce Cloud Platform' }
+    { id: 'microservice', name: 'Microservice', icon: '🔬', description: 'Microservice Architecture' },
+    { id: 'sap-commerce-cloud', name: 'SAP Commerce Cloud', icon: '🛒', description: 'SAP Commerce Cloud Platform' }
   ];
 
   // Confirmation dialog state

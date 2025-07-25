@@ -74,7 +74,7 @@ const startQuiz = async (req, res) => {
     if (!questions || questions.length === 0) {
       // Use topic-specific questions if available, otherwise default to all questions
       const topic = attempt.topic || 'reactjs';
-      questions = getQuizQuestions(50, topic);
+      questions = await getQuizQuestions(50, topic);
       startedAt = new Date().toISOString();
       
       // Update attempt with questions and start time
@@ -191,7 +191,7 @@ const submitQuiz = async (req, res) => {
       // Time exceeded - force submission but mark as overtime
       console.log(`Time limit exceeded for attempt ${attemptId}. Actual: ${actualTimeElapsed}s, Limit: ${timeLimit}s`);
       
-      const validationResults = validateAnswers(answers, attempt.topic);
+      const validationResults = await validateAnswers(answers, attempt.topic);
       const proficiencyLevel = getProficiencyLevel(validationResults.percentage, attempt.topicName);
 
       const results = {
@@ -204,6 +204,7 @@ const submitQuiz = async (req, res) => {
         skippedAnswers: validationResults.skippedAnswers,
         skippedCount: validationResults.skippedCount,
         timeTaken: timeLimit, // Use time limit as time taken since it was exceeded
+        totalTime: timeLimit, // Frontend expects totalTime
         timeExceeded: true,
         actualTimeElapsed: actualTimeElapsed,
         submittedAt: new Date().toISOString()
@@ -228,7 +229,7 @@ const submitQuiz = async (req, res) => {
     }
 
     // Normal submission within time limit
-    const validationResults = validateAnswers(answers, attempt.topic);
+    const validationResults = await validateAnswers(answers, attempt.topic);
     const proficiencyLevel = getProficiencyLevel(validationResults.percentage, attempt.topicName);
     
     // Use server-calculated time instead of client-reported time
@@ -244,6 +245,7 @@ const submitQuiz = async (req, res) => {
       skippedAnswers: validationResults.skippedAnswers,
       skippedCount: validationResults.skippedCount,
       timeTaken: serverTimeTaken,
+      totalTime: serverTimeTaken, // Frontend expects totalTime
       timeExceeded: false,
       submittedAt: new Date().toISOString()
     };
