@@ -17,20 +17,40 @@ app.use(helmet({
 }));
 
 // CORS configuration
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000', 
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:3000'
-];
+const getAllowedOrigins = () => {
+  const defaultOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000', 
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000'
+  ];
 
-// Add production URLs from environment variables
-if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
-}
+  // Get origins from environment variables
+  const envOrigins = [];
+  
+  // Primary frontend URL
+  if (process.env.FRONTEND_URL) {
+    envOrigins.push(process.env.FRONTEND_URL);
+  }
+  
+  // Additional origins (comma-separated)
+  if (process.env.ALLOWED_ORIGINS) {
+    const additionalOrigins = process.env.ALLOWED_ORIGINS.split(',')
+      .map(origin => origin.trim())
+      .filter(origin => origin.length > 0);
+    envOrigins.push(...additionalOrigins);
+  }
+  
+  // In production, only use environment origins if provided, otherwise use defaults
+  if (process.env.NODE_ENV === 'production' && envOrigins.length > 0) {
+    return envOrigins;
+  }
+  
+  // In development or when no env origins provided, combine defaults with env origins
+  return [...defaultOrigins, ...envOrigins];
+};
 
-// Add your specific frontend URL
-allowedOrigins.push('https://reactjs-quiz-n7ep.onrender.com');
+const allowedOrigins = getAllowedOrigins();
 
 // CORS origin function to handle dynamic origins
 const corsOrigin = (origin, callback) => {
